@@ -1,0 +1,16 @@
+{%extends 'base.html'%}
+{%block title%}Wright Store | Products{%endblock%}
+{%block body%}
+    <div class="display_product_cont">
+        {% for item in products%}
+            <div class="display_product_card">
+                {% if item[-1] != None %}
+                    <a href="{{url_for('show_product',config_id=item[0])}}"><img style="" src="{{item[-1]}}" alt="{{item[2]| title}}" srcset=""></a>
+                {%else%}
+                    <a href="{{url_for('show_product',config_id=item[0])}}"><img style="" src="{{item[-2]}}" alt="{{item[2]| title}}" srcset=""></a>
+                {%endif%}
+                <a href="{{url_for('show_product',config_id=item[0])}}"><h4 class="product_name">{{item[2]| title}} {{item[4]| title}} {{item[5]| upper}}</h4></a>
+            </div>
+        {%endfor%}
+    </div>
+{%endblock%}

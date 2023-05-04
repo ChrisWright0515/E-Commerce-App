@@ -1,0 +1,107 @@
+{%extends 'account.html'%}
+{%block title%}Wright Store | All Accounts{%endblock%}
+{%block admin_link%}
+<a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
+{%endblock%}
+{%block body%}
+    <div class="title">
+        <h2 class="header">All Accounts</h2>
+    </div>
+    {%if approve_vendor_message%}
+        {%if approve_vendor_message == 'Vendor Added'%}
+            <p style="color:green; font-size:42px;">{{approve_vendor_message}}</p>
+        {%else%}
+            <p style="color:red;font-size:42px;">{{approve_vendor_message}}</p>
+        {%endif%}
+    {%endif%}
+  <div class="admin_card_container">
+    {%for account in all_accounts%}
+      <div class="profile_card admin_view_card">
+        <div class="profile_container">
+            <img src="https://picsum.photos/200/300" alt="{{account[1]| title}}">
+        </div>
+            <div class="name_container">
+                <h2 class="vendor_name card_title">{{account[1] | title}}</h2>
+                <div class="underline"></div>
+                <div class="contact">
+                    <div class="contact_label_cont flex_cont">
+                        <p class="contact_label">User Number:</p>
+                        <p>{{account[0]}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+
+                    <div class="contact_label_cont flex_cont">
+                        {%if account[7] == 'VEN'%}
+                            <p class="contact_label">Company Name:</p>
+                        {%else%}
+                            <p class="contact_label">First Name:</p>
+                        {%endif%}
+                        <p>{{account[1]}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+
+                    {%if account[2] == None%}
+                    {%else%}
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Last Name:</p>
+                            <p>{{account[2]}}</p>
+                        </div>
+                        <div class="underline"></div>
+                    {%endif%}
+                    <div class="contact_label_cont flex_cont">
+                        <p class="contact_label">Phone:</p>
+                        <p>{{phone_format(account[3]| string)}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+
+                    <div class="contact_label_cont flex_cont">
+                        <p class="contact_label">Email:</p>
+                        <p>{{account[4]}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+
+                    <div class="contact_label_cont flex_cont">
+                        <p class="contact_label">Username:</p>
+                        <p>{{account[5]}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+
+                    <div class="contact_label_cont flex_cont">
+                        <p class="contact_label">Type:</p>
+                        <p>{{account[7]}}</p>
+                    </div>
+
+                    <div class="underline"></div>
+                    {%if account[7] == 'VEN'%}
+                            {%if account[0] | int not in vendors[0]%}
+                                <form style="display:flex;flex-direction:column;align-items:center;" action="{{url_for('approve_vendor',user_type=user_info[7],user_no=account[0])}}" method="post">
+
+                                </form>
+                                <a class="admin_link approve_vendor"style="position:absolute;bottom:1rem;width:fit-content">{{account[0]}}Approve Vendor{{vendors[i][0]}}</a>
+                            {%else%}
+                                {%for i in range(vendors[0]| length)%}
+                                    {%if account[0] == vendors[0][i]%}
+                                        <div class="contact_label_cont flex_cont">
+                                            <p class="contact_label">Vendor ID:</p>
+                                            <p>{{vendors[1][i]}}</p>
+                                        </div>
+
+                                        <div class="underline"></div>
+                                    {%endif%}
+                                {%endfor%}
+                            {%endif%}
+                    {%endif%}
+                </div>
+            </div>
+      </div>
+    {%endfor%}
+  </div>
+{%endblock%}
+{%block script%}
+    <script src="../static/script/approve_vendor.js"></script>
+{%endblock%}

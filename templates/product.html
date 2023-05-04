@@ -1,0 +1,77 @@
+{%extends 'base.html'%}
+{%block title%}Wright Store | {{product[2] | title}}{%endblock%}
+{%block body%}
+    <div class="prod_info">
+        <div class="product_pics">
+            {%if product[-1] != None%}
+                <img style="padding: 2rem;height: 350px;width: 350px;" src="{{product[-1]}}" alt="" srcset="" class="big_pic" id="big_pic">
+            {%else%}
+                <img style="padding: 2rem;height: 350px;width: 350px;" src="{{product[-2]}}" alt="" srcset="" class="big_pic" id="big_pic">
+            {%endif%}
+            <div class="small_pic_cont">
+                {%if imgs | length < 4 %}
+                    {% for img in imgs %}
+                        <img src="{{img}}" class="small_pic" alt="" srcset="">
+                    {% endfor %}
+                {% else %}
+                    {% for i in range(3) %}
+                        <img src="{{imgs[i]}}" alt=""class="small_pic" srcset="">
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="product_options">
+            {%if add_cart_message%}
+                {%if add_cart_message == 'Added to Cart'%}
+                    <p style="color:green;">{{add_cart_message}}</p>
+                {%else%}
+                    <p style="color:red;">{{add_cart_message}}</p>
+                {%endif%}
+            {%endif%}
+            <div class="title"><h2 class="prod_display_name">{{product[2] | title}}</h2></div>
+            <div class="underline"></div>
+            <p>{{product[3] | title}}</p>
+            <div class="underline"></div>
+            {%if product[4] != '' or product[5] != ''%}
+                <p>{{product[4] | title}} {{product[5] | upper}}</p>
+                <div class="underline"></div>
+            {%endif%}
+
+
+
+            {%if product[8] < 1%}
+                <p style="text-decoration:line-through;color:red" class="amt_avail">Amount Available: 0</p>
+            {%else%}
+                {%if current_user%}
+                    <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
+                    <form style="text-align:center;" action="{{url_for('add_to_cart',config_id=product[0])}}" method="post">
+<!--                        <select name="quantity" style="margin:.5rem auto;">-->
+<!--                            <option hidden="hidden">Select Quantity</option>-->
+<!--                            {%for i in range(1,product[8] + 1)%}-->
+<!--                                <option value="{{i}}">{{i}}</option>-->
+<!--                            {%endfor%}-->
+<!--                        </select>-->
+                        {%if product[6] == product[7]%}
+                            <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
+                        {%else%}
+                            <p style="color:red; text-decoration:line-through;">Price: {{product[6]}}</p>
+                            <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
+                        {%endif%}
+                    </form>
+
+<!--                    <a class="add_to_cart" href="">Add to cart ${{product[6]}}</a>-->
+                {%endif%}
+            {%endif%}
+        </div>
+    </div>
+{%endblock%}
+{%block script%}
+    <script type="text/javascript">
+<!--        $('.').slick({-->
+<!--          infinite: true,-->
+<!--          slidesToShow: 1,-->
+<!--          slidesToScroll: 1-->
+<!--        });-->
+    </script>
+{%endblock%}
+

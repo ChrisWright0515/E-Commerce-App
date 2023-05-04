@@ -1,0 +1,109 @@
+{%extends 'base.html'%}
+{%block title%}Wright Store | User Account{%endblock%}
+{%block body%}
+    <div class="title">
+        <h2 class="header">Account</h2>
+    </div>
+    <section class="center">
+        <div class="profile_card">
+            <div class="profile_container">
+            </div>
+            {%block prof_info%}
+                <div class="name_container">
+                    <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
+                    <div class="underline"></div>
+                    <div class="contact">
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Phone Number:</p>
+                            <p class="contact_info">{{phone}}</p>
+                        </div>
+                        <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Email:</p>
+                            <p class="contact_info">{{user_info[4]}}</p>
+                        </div>
+                        <div class="underline"></div>
+                    </div>
+                </div>
+            {%endblock%}
+        </div>
+    </section>
+    <div class="page_underline"></div>
+    {%if edit_cart_message%}
+        {%if edit_cart_message == 'Cart Updated'%}
+            <p style="color:green; font-size:42px;">{{edit_cart_message}}</p>
+        {%else%}
+            <p style="color:red; font-size:42px;">{{edit_cart_message}}</p>
+        {%endif%}
+    {%endif%}
+    <section class="product_container">
+        <div style="min-width:auto;" class="product_card">
+            <a class="delete_cart" href="{{url_for('delete_cart')}}"><ion-icon style="font-size:26px;" name="trash-outline"></ion-icon><span>Delete Cart</span></a>
+            <div class="cart_headers">
+                <h1 class="cart_header">Cart</h1>
+                <p class="cart_header">Product</p>
+                <p class="cart_header">Price</p>
+                <p class="cart_header">Quantity</p>
+                <p class="cart_header">Remove</p>
+                <p class="cart_header">Total</p>
+            </div>
+            {%for product in cart_items%}
+                <div class="cart_item">
+                    {%if product[-1] == None%}
+                        <div class="img cart_details">
+                            <img style="width:100px" src="{{product[-2]}}" alt="" srcset="">
+                        </div>
+                    {%else%}
+                        <div class="img cart_details">
+                            <img style="width:100px" src="{{product[-1]}}" alt="" srcset="">
+                        </div>
+                    {%endif%}
+                    <div class="cart_name_description cart_details">
+                        <h2 class="card_title cart_title">
+                            {{product[3] | title}}
+                            {%if product[10] == '' and product[11] == ''%}
+                            {%elif product[10] == '' and product[11] != ''%}
+                                {{product[11]}}
+                            {%elif product[10] != '' and product[11] == ''%}
+                                {{product[10]}}
+                            {%else%}
+                                {{product[10] | title}} {{product[11]}}
+                            {%endif%}
+                        </h2>
+                        <p>{{product[9] | title}}</p>
+                    </div>
+                    <div class="cart_price cart_details">
+                        {%if product[4] != product[6]%}
+                            <h2 style="color:red;text-decoration:line-through;" class="old_price">${{ '{:,.2f}'.format(product[4]) }}</h2>
+                            <h2 style="color:green;" class="new_price">${{ '{:,.2f}'.format(product[6]) }}</h2>
+                        {%else%}
+                            <h2 style="color:green;" class="new_price">${{ '{:,.2f}'.format(product[6]) }}</h2>
+                        {%endif%}
+                    </div>
+                    <form method="post"action="{{url_for('add_qty',cart_item_id=product[0])}}" class="cart_qty cart_details">
+                        <select onchange="this.form.submit()" name="change_qty">
+                            <option hidden="hidden" selected>{{product[7]}}</option>
+                            {%for i in range(1,product[8] + 1)%}
+                                <option value="{{i}}">{{i}}</option>
+                            {%endfor%}
+                        </select>
+<!--                        <input style="width:50px;cursor:pointer;" type="number"maxlength="{{product[8] + product[7]}}"value="{{product[7]}}" name="update_qty"class=" input update_qty" id="">-->
+                    </form>
+                    <a class="delete_cart_item cart_details" href="{{url_for('del_cart_item',cart_item_id=product[0])}}"><ion-icon style="font-size:26px;" name="trash-outline"></ion-icon></a>
+                    <div class="cart_item_total cart_details">
+                        <h1>Total: ${{ '{:,.2f}'.format(product[12]) }}</h1>
+                    </div>
+                </div>
+            <div class="underline"></div>
+            {%endfor%}
+            <div class="cart_checkout">
+                <p style="width:30%"></p>
+                <a href="{{url_for('add_order',user_no=user_info[0])}}" class="go_to_checkout">Order Cart</a>
+                {%if total[0] != None%}
+                    <h1 class="cart_total">Grand total: ${{ '{:,.2f}'.format(total[0]) }}</h1>
+                {%endif%}
+            </div>
+        </div>
+    </section>
+{%endblock%}
+<input type="text" name="img_url" id="">
