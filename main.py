@@ -259,7 +259,6 @@ def login():
                 approved_user = conn.execute(text(
                     f'select type from users_mast where username = \'{username}\' or email = \'{username}\'')).all()
                 if approved_user[0][0] == 'CUS':
-
                     session['current_user'] = name[0]
                     return redirect(url_for('show_home'))
                 elif approved_user[0][0] == 'VEN':
@@ -326,22 +325,26 @@ def show_account_page(user_type):
         all_products = conn.execute(text(
             f'select prod_no,title,description,category,display_pic,pm.vendor_id from product_mast pm natural join vendors natural join users_mast where username = \'{current_user}\' ;')).all()
         product_details = conn.execute(text(
-            f'select config_id,prod_no,color,size,price,qty,config_display from product_details natural join product_mast natural join vendors natural join users_mast where username = \'{current_user}\' ')).all()
+            f'select pd.config_id,pd.prod_no,pd.color,pd.size,pd.price,pd.qty,pd.config_display from product_details pd natural join product_mast natural join vendors natural join users_mast where username = \'{current_user}\' ')).all()
         product_count = conn.execute(text(
             f'select count(category),category from product_mast where vendor_id = \'{user_info[0][8]}\' group by category')).all()
-
+        all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
+        disc_user = put_in_list(all_discounts,0)
+        disc_type = put_in_list(all_discounts,1)
+        disc_exp = put_in_list(all_discounts, 2)
+        discounts = [disc_user,disc_type,disc_exp]
         stock = conn.execute(text(f'select sum(qty),prod_no from product_details group by prod_no;')).all()
         prod_nums = put_in_list(stock, 1)
         qty = put_in_list(stock, 0)
         inventory = [prod_nums, qty]
-        print(inventory)
+        print(product_details)
         return render_template('account.html', user_info=user_info[0], phone=phone,
                                all_products=all_products, product_details=product_details,
                                product_count=product_count, inventory=inventory, current_ven=current_user,
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
-                               disc_message=disc_message, admin=False)
+                               disc_message=disc_message,discounts=discounts, admin=False)
     elif 'admin' in session:
         if 'edit_prod_message' in session:
             edit_message = session.pop('edit_prod_message')
@@ -382,6 +385,11 @@ def show_account_page(user_type):
             f'select count(category),category from product_mast group by category')).all()
         user_count = conn.execute(text(
             f'select count(user_no),type from users_mast group by type')).all()
+        all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
+        disc_user = put_in_list(all_discounts, 0)
+        disc_type = put_in_list(all_discounts, 1)
+        disc_exp = put_in_list(all_discounts, 2)
+        discounts = [disc_user, disc_type, disc_exp]
         print(user_count)
         print(all_products)
         phone = phone_format(str(user_info[0][3]))
@@ -397,8 +405,7 @@ def show_account_page(user_type):
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
-                               disc_message=disc_message, admin=True)
-
+                               disc_message=disc_message,discounts=discounts, admin=True)
     else:
         return redirect(url_for('show_home'))
 
@@ -955,56 +962,55 @@ def delete_cart():
         return redirect(url_for('show_home'))
 
 
-@app.route('/user/<user_no>order', methods=['GET'])
-def show_add_order(user_no):
+@app.route('/user/order')
+def order_cart():
     if 'current_user' in session:
-        update_qty = request.form.getlist('update_qty')
-        current_user = True
-        admin = False
         username = session['current_user']
-        cart_items = conn.execute(text(
-            f'select cart_item_id,ci.user_no,ci.config_id,prod_name,prod_old_price,discount,price_after_disc,ci.qty as cart_qty,pd.qty as stock,p.description,pd.color,pd.size,ci.total,p.display_pic,pd.config_display from cart_items ci join product_details pd on (ci.config_id=pd.config_id) natural join product_mast p where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
-        order_message = False
-        return render_template('checkout.html', current_user=current_user, admin=admin, order_message=order_message)
+        number = conn.execute(text(f'select user_no from users_mast where username = \'{username}\'')).all()
+        user_no = number[0][0]
+        quantities = conn.execute(text(f'select ci.qty,pd.qty from cart_items ci join product_details pd on (ci.config_id=pd.config_id) where user_no = {user_no}')).all()
+        if check_cart_qty(quantities):
+            session['edit_cart_message'] = 'Cart Ordered'
+            # cart_items = conn.execute(text(f'select * = {user_no} and status = \'Pending\'')).all()
+            total = conn.execute(text(
+                f'select round(sum(price_after_disc * qty),2) from cart_items where user_no = {user_no} ')).all()
+            conn.execute(text(f'insert into orders (user_no,total) values ({user_no},{total[0][0]})'))
+            conn.commit()
+            order_no = conn.execute(text(f'select order_no from orders where user_no = {user_no} and status = \'Pending\'')).all()
+            conn.execute(text(f'insert into order_details (order_no,config_id,qty,price_paid) select o.order_no,ci.config_id,ci.qty,ci.total from orders o join cart_items ci on (o.user_no=ci.user_no) where ci.user_no = {user_no} and o.status = \'Pending\''))
+            conn.commit()
+            conn.execute(text(f'delete from cart_items where user_no = {user_no} and status = \'In Cart\''))
+            conn.commit()
+            return redirect(url_for('show_user_page'))
+        else:
+            session['edit_cart_message'] = 'Order Failed'
+            return redirect(url_for('show_user_page'))
     else:
         return redirect(url_for('show_home'))
 
 
-@app.route('/user/<user_no>order', methods=['POST'])
-def add_order(user_no):
-    if 'current_user' in session:
-        update_qty = request.form.getlist('update_qty')
-        current_user = True
-        admin = False
-        username = session['current_user']
-        cart_items = conn.execute(text(
-            f'select cart_item_id,ci.user_no,ci.config_id,prod_name,prod_old_price,discount,price_after_disc,ci.qty as cart_qty,pd.qty as stock,p.description,pd.color,pd.size,ci.total,p.display_pic,pd.config_display from cart_items ci join product_details pd on (ci.config_id=pd.config_id) natural join product_mast p where user_no in (select user_no from users_mast where username = \'{username}\')')).all()
-        count = 0
-        for item in cart_items:
-            for qty in update_qty:
-                print(f'cart qty {item[7]}, order qty: {qty}')
-                if int(item[7]) != int(qty):
-                    if int(item[7]) < int(qty):
-                        print('QTY ADDED')
-                        count += 1
-                        continue
-                    elif int(item[7]) > int(qty):
-                        print('QTY SUBTRACTED')
-                        count += 1
-                        continue
-                else:
-                    print('SAME QTY')
-                    # instock = conn.execute(text(f'select qty from product_details where config_id = {int(item[2])}')).all()
-                    # print(instock)
-                    # if int(instock[0][0]) >= int(update_qty[count]):
-                    #     print('In Stock')
-                    # else:
-                    #     print('NOT IN STOCK')
-        count += 1
-        return render_template('checkout.html', current_user=current_user, admin=admin)
+@app.route('/account/<user_type>/orders')
+def show_admin_orders(user_type):
+    if 'current ven' in session:
+        current_user = session['current_ven']
+        user_info = conn.execute(
+            text(f'select * from users_mast natural join vendors where username = \'{current_user}\'')).all()
+        phone = phone_format(str(user_info[0][3]))
+        all_products = conn.execute(text(
+            f'select prod_no,title,description,category,display_pic,pm.vendor_id from product_mast pm natural join vendors natural join users_mast where username = \'{current_user}\' ;')).all()
+        # product_details = conn.execute(text(
+        #     f'select pd.config_id,pd.prod_no,pd.color,pd.size,pd.price,pd.qty,pd.config_display from product_details pd natural join product_mast natural join vendors natural join users_mast where username = \'{current_user}\' ')).all()
+        product_count = conn.execute(text(
+            f'select count(category),category from product_mast where vendor_id = \'{user_info[0][8]}\' group by category')).all()
+        orders = conn.execute(text(f'select * from orders where  user_no = {user_info[0][0]} and status \'Pending\''))
+        print("VENDOR")
+        return render_template('admin_orders.html', user_info=user_info[0], phone=phone,
+                               all_products=all_products, orders=orders, admin=False,
+                               product_count=product_count,  current_ven=current_user)
+    elif 'admin' in session:
+        print()
     else:
         return redirect(url_for('show_home'))
-
 
 @app.route('/logout')
 def logout():

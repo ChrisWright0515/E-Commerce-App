@@ -111,12 +111,15 @@
                                   <p>Admin</p>
                                 </div>
                             </div>
-                            <div style="justify-content:center;" class="details_container">
+                        {%endif%}
+                            <div class="details_container">
                                 {%block admin_link%}
-                                    <a class="admin_link" href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
+                                    {%if admin%}
+                                        <a class="admin_link" href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
+                                    {%endif%}
+                                        <a class="admin_link" href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
                                 {%endblock%}
                             </div>
-                        {%endif%}
                     </div>
                 {%endblock%}
             </div>
@@ -259,6 +262,17 @@
                             <p>Product Number:</p>
                             <p class="product_input">{{product[0]}}</p>
                         </div>
+<!--                        <div class="next_to">-->
+<!--                            {%for i in range(discounts[0] | length)%}-->
+<!--                                {%if product[0] == discounts[0][i]%}-->
+<!--                                    <p>Discount: {{discounts[1][i] | title}}</p>-->
+<!--                                    <p>{{product[2][i] * 100}}%</p>-->
+<!--                                {%elif product[6]== 'TIMED'%}-->
+<!--                                    <p>Discount: {{product[6] | title}}</p>-->
+<!--                                    <p>{{product[8]}} days left {{product[7] * 100}}%</p>-->
+<!--                                {%endif%}-->
+<!--                            {%endfor%}-->
+<!--                        </div>-->
 
                         <div class="underline"></div>
 
@@ -303,12 +317,12 @@
                             <p class="disc_icon show_disc" style="position:relative;"><ion-icon style="font-size:24px;" class="" name="pricetags-outline"></ion-icon><span>Add Discount</span></p>
                             <div class="discount_cont"style="display:none;flex-direction:column;align-items:center;">
                                 <input type="submit" value="Add">
-                                <select style="" class="disc_type"name="disc_type">
+                                <select  class="disc_type"name="disc_type">
                                     <option hidden="hidden">Discount Type</option>
                                     <option value="TIMED">Timed</option>
                                     <option value="UNTIMED">Untimed</option>
                                 </select>
-                                <input type="number"style="" name="disc_amt"maxlength="99"minlength="1"placeholder="Discount Amount" id="">
+                                <input type="number" name="disc_amt"maxlength="99"minlength="1"placeholder="Discount Amount" id="">
                                 <input style="display:none;" type="number"placeholder="Discount Duration(Days)" name="disc_dur" id="">
                             </div>
 

@@ -1,0 +1,34 @@
+{%extends 'base.html'%}
+{%block title%} Wright Store | Orders {%endblock%}
+{%block body%}
+  <section class="center">
+      <div class="profile_card">
+          <div class="profile_container">
+          </div>
+          {%block prof_info%}
+              <div class="name_container">
+                  <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
+                  <div class="underline"></div>
+                  <div class="contact">
+                      <div class="contact_label_cont flex_cont">
+                          <p class="contact_label">Phone Number:</p>
+                          <p class="contact_info">{{phone}}</p>
+                      </div>
+                      <div class="underline"></div>
+                      <div class="contact_label_cont flex_cont">
+                          <p class="contact_label">Email:</p>
+                          <p class="contact_info">{{user_info[4]}}</p>
+                      </div>
+                      <div class="underline"></div>
+                  </div>
+              </div>
+          {%endblock%}
+      </div>
+  </section>
+  <div class="page_underline"></div>
+    <div class="title">
+        <h2 class="header">Orders</h2>
+    </div>
+    {%for order in orders%}
+
+{%endblock%}

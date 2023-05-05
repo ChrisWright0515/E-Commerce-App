@@ -1,0 +1,18 @@
+{%extends 'account.html'%}
+{%block title%}Wright Store | Orders {%endblock%}
+{%block admin_link%}
+<a class="admin_link" href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
+<a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
+{%endblock%}
+{%block body%}
+    <div class="title">
+        <h2 class="header">All Accounts</h2>
+    </div>
+  <div class="orders_card_container">
+    {%for account in all_accounts%}
+    <div class="product_card">
+        <p>{{order[0]}}</p>
+        <p>{{order[4]}}</p>
+    </div>
+    {%endfor%}
+{%endblock%}

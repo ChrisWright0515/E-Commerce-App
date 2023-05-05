@@ -84,7 +84,7 @@ header{
     background-color: transparent;
     border-bottom: 2px solid #FD0000;
     padding: 10px;
-    transition: background-color .5s;
+    transition: 1s;
 }
 .logo{
     text-decoration: none;
@@ -549,7 +549,7 @@ input[type=submit]:not(.head_submit):hover{
     flex-direction: column;
     background-color: #fff;
     border-radius: 25px;
-    width: 40%;
+    min-width: 40%;
     padding:1rem;
     font-size:60%;
     box-shadow: 0px 10px 30px #00000020;

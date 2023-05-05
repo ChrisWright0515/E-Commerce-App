@@ -11,6 +11,7 @@ class Product():
         self.price = price
         self.quantity = quantity
 
+
 def generate_random_string(length):
     letters = string.ascii_letters
     random_string = ''.join(random.choice(letters) for i in range(length))
@@ -105,7 +106,7 @@ def list_row(row):
     return l
 
 
-def put_in_list(row,index):
+def put_in_list(row, index):
     li = []
     for item in row:
         li.append(item[index])
@@ -125,3 +126,10 @@ def json_product(row):
     p = Product(all_colors.copy(), all_sizes.copy(), all_prices.copy(), all_quant.copy())
     configs = {'product': p.__dict__}
     return configs
+
+
+def check_cart_qty(row):
+    for item in row:
+        if item[0] > item[1]:
+            return False
+    return True

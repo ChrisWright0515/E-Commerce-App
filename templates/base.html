@@ -29,20 +29,22 @@
                     <div class="underline"></div>
                     <a href="/products">Products</a>
                     <div class="underline"></div>
-                    {%if current_user%}
-                        <a href="">My Account</a>
-                        <div class="underline"></div>
-                        <a href="">Cart</a>
-                        <div class="underline"></div>
-                    {%endif%}
-                    {%if current_ven%}
-                        <a href="{{url_for('show_account_page',user_type='VEN')}}">Vendor Account</a>
-                        <div class="underline"></div>
-                    {%endif%}
-                    {%if (current_user or current_ven or admin)%}
-                        <a href="{{ url_for('logout') }}">Log Out</a>
-                        <div class="underline"></div>
-                    {%endif%}
+<!--                    {%if current_user%}-->
+<!--                        <a href="">My Account</a>-->
+<!--                        <div class="underline"></div>-->
+<!--                        <a href="">Cart</a>-->
+<!--                        <div class="underline"></div>-->
+<!--                        <a href="">Orders</a>-->
+<!--                        <div class="underline"></div>-->
+<!--                    {%endif%}-->
+<!--                    {%if current_ven%}-->
+<!--                        <a href="{{url_for('show_account_page',user_type='VEN')}}">Vendor Account</a>-->
+<!--                        <div class="underline"></div>-->
+<!--                    {%endif%}-->
+<!--                    {%if (current_user or current_ven or admin)%}-->
+<!--                        <a href="{{ url_for('logout') }}">Log Out</a>-->
+<!--                        <div class="underline"></div>-->
+<!--                    {%endif%}-->
                 </div>
             </div>
             {%if user_reg_message%}
@@ -73,6 +75,8 @@
                         <div class="underline"></div>
                         {%if current_user%}
                             <a href="">My Account</a>
+                            <div class="underline"></div>
+                            <a href="">Orders</a>
                             <div class="underline"></div>
                         {%endif%}
                         {%if admin%}
