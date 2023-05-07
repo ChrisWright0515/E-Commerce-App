@@ -1,10 +1,13 @@
-from io import BytesIO
+# from io import BytesIO
 
 from flask import Flask, render_template, request, session, redirect, url_for
-from sqlalchemy import Column, INTEGER, String, Numeric, Float, create_engine, text
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import * 
+#Column, INTEGER, String, Numeric, Float, create_engine, text
 import json
 import base64
 from functions import *
+from Classes import *
 
 app = Flask(__name__)
 # CODE
@@ -12,6 +15,22 @@ db_url = 'mysql://root:0515@localhost/game_store'
 engine = create_engine(db_url, echo=True)
 conn = engine.connect()
 app.secret_key = generate_random_string(10)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+db = SQLAlchemy(app)
+
+
+class Product_Details(db.Model):
+    __tablename__ = 'product_details'
+    config_id = Column(INTEGER, primary_key=True)
+    prod_no = Column(INTEGER, nullable=False)
+    color = Column(String(255))
+    size = Column(String(255))
+    price = Column(Numeric(20, 2), nullable=False)
+    qty = Column(INTEGER, nullable=False)
+    config_display = Column(String(255))
+
+
+
 
 
 @app.route('/')
@@ -781,29 +800,92 @@ def add_discount(user_type, prod_no):
 
 @app.route('/products')  # GET PROD_NO
 def show_all_products():
+    sizes = conn.execute(text(f'select distinct(size) from product_details where size != "";')).all()
+    colors = conn.execute(text(f'select distinct(color) from product_details where color != "";')).all()
+    products = conn.execute(text(
+        f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast;')).all()
+    if 'current_user' in session:
+        current_user = session['current_user']
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, current_user=current_user, cart=cart)
+    elif 'admin' in session:
+        admin = session['admin']
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, cart=False, admin=admin)
+    elif 'current_ven' in session:
+        current_ven = session['current_ven']
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, cart=False, current_user=current_ven)
+    else:
+        return render_template('products.html',colors=colors,sizes=sizes, cart=False, products=products)
+
+
+@app.route('/products/color')
+def show_color_products():
+    color = request.args.get('color')
+    sizes = conn.execute(text(f'select distinct(size) from product_details where size != "";')).all()
+    colors = conn.execute(text(f'select distinct(color) from product_details where color != "";')).all()
+    products = conn.execute(text(
+        f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where pd.color = \'{color}\';')).all()
+    if 'current_user' in session:
+        current_user = session['current_user']
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('products.html', products=products,colors=colors,sizes=sizes, current_user=current_user, cart=cart)
+    elif 'admin' in session:
+        admin = session['admin']
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, cart=False, admin=admin)
+    elif 'current_ven' in session:
+        current_ven = session['current_ven']
+        return render_template('products.html', colors=colors,sizes=sizes, products=products, cart=False, current_user=current_ven)
+    else:
+        return render_template('products.html',colors=colors, sizes=sizes,cart=False, products=products)
+
+
+@app.route('/products/size')
+def show_size_products():
+    size = request.args.get('size')
+    sizes = conn.execute(text(f'select distinct(size) from product_details where size != "";')).all()
+    colors = conn.execute(text(f'select distinct(color) from product_details where color != "";')).all()
+    products = conn.execute(text(
+        f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where pd.size = \'{size}\';')).all()
+    if 'current_user' in session:
+        current_user = session['current_user']
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('products.html', products=products,colors=colors,sizes=sizes, current_user=current_user, cart=cart)
+    elif 'admin' in session:
+        admin = session['admin']
+        return render_template('products.html',colors=colors, products=products, sizes=sizes, cart=False, admin=admin)
+    elif 'current_ven' in session:
+        current_ven = session['current_ven']
+        return render_template('products.html', colors=colors, products=products, sizes=sizes, cart=False, current_user=current_ven)
+    else:
+        return render_template('products.html',colors=colors, sizes=sizes,cart=False, products=products)
+
+
+@app.route('/products/category')
+def show_category_products():
+    category = request.args.get('category')
     if 'current_user' in session:
         current_user = session['current_user']
         products = conn.execute(text(
-            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast;')).all()
+            f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where p.category = \'{category}\';')).all()
         cart = conn.execute(text(
             f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
         return render_template('products.html', products=products, current_user=current_user, cart=cart)
     elif 'admin' in session:
         admin = session['admin']
         products = conn.execute(text(
-            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast;')).all()
-        print(products)
+            f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where p.category = \'{category}\';')).all()
         return render_template('products.html', products=products, cart=False, admin=admin)
     elif 'current_ven' in session:
         current_ven = session['current_ven']
         products = conn.execute(text(
-            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast;')).all()
-        print(products)
+            f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where p.category = \'{category}\';')).all()
         return render_template('products.html', products=products, cart=False, current_user=current_ven)
     else:
         products = conn.execute(text(
-            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast;')).all()
-        print(products)
+            f'select pd.config_id,pd.prod_no,p.title,p.description,pd.color,pd.size,pd.price,pd.qty,p.display_pic,pd.config_display from product_details pd natural join product_mast p where p.category = \'{category}\';')).all()
         return render_template('products.html', cart=False, products=products)
 
 
@@ -849,9 +931,6 @@ def show_add_to_cart(config_id):
 @app.route('/product/<config_id>/add', methods=['POST'])
 def add_to_cart(config_id):
     if 'current_user' in session:
-        # qty = request.form.get('quantity')
-        # if qty != 'Select Quantity':
-        #     print(qty)
         username = session['current_user']
         user_no = conn.execute(text(f'select user_no from users_mast where username = \'{username}\'')).all()
         dupe_cart_item = conn.execute(
@@ -871,15 +950,11 @@ def add_to_cart(config_id):
             conn.execute(text(
                 f'insert into cart_items (user_no,config_id,prod_name,prod_old_price,discount,price_after_disc,qty,total) values ({user_no[0][0]}, {config_id},\'{prod_name[0][0]}\', {old_price[0][0]:.2f}, {disc_amt[0][0]:.2f}, {after_disc[0][0]}, 1,{float(after_disc[0][0]) * 1}  )'))
             conn.commit()
-            # conn.execute(text(f'update product_details set qty = (qty - {qty}) where config_id = {config_id}'))
-            # conn.commit()
+
             return redirect(url_for('show_product', config_id=config_id))
         else:
             session['add_to_cart_message'] = 'Item already in cart'
             return redirect(url_for('show_product', config_id=config_id))
-    # else:
-    #     session['add_to_cart_message'] = 'Please select quantity'
-    #     return redirect(url_for('show_product', config_id=config_id))
     else:
         session['add_to_cart_message'] = 'Must be signed in to add to cart'
         return redirect(url_for('show_product', config_id=config_id))
@@ -981,6 +1056,8 @@ def order_cart():
             conn.commit()
             conn.execute(text(f'delete from cart_items where user_no = {user_no} and status = \'In Cart\''))
             conn.commit()
+            conn.execute(text(f'update product_details pd join order_details od on (pd.config_id=od.config_id) set pd.qty = (pd.qty - od.qty) where od.order_no = {order_no[0][0]}'))
+            conn.commit()
             return redirect(url_for('show_user_page'))
         else:
             session['edit_cart_message'] = 'Order Failed'
@@ -989,26 +1066,67 @@ def order_cart():
         return redirect(url_for('show_home'))
 
 
-@app.route('/account/<user_type>/orders')
+@app.route('/user/orders')
+def show_orders():
+    if 'current_user' in session:
+
+        current_user = session['current_user']
+        number = conn.execute(text(f'select user_no from users_mast where username = \'{current_user}\'')).all()
+        user_no = number[0][0]
+        user_info = conn.execute(text(
+            f'select * from users_mast where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        phone = phone_format(str(user_info[0][3]))
+        orders = conn.execute(text(f'select o.order_no,o.user_no,date(o.ord_date),o.total,o.status from orders o join users_mast u on (u.user_no=o.user_no) where o.user_no = {user_no} order by order_no desc')).all()
+        order_details = conn.execute(text(f'select od.order_no,od.config_id,p.title,od.qty,od.price_paid,pd.price,pd.color,pd.size,od.confirm_by,p.display_pic,pd.config_display from order_details od join product_details pd on (od.config_id=pd.config_id) join product_mast p on (pd.prod_no=p.prod_no) where od.order_no in (select order_no from orders where user_no = {user_no})')).all()
+        print(order_details)
+        print(orders)
+        return render_template('user_orders.html', orders=orders, order_details=order_details, user_info=user_info[0],phone=phone,current_user=current_user)
+    else:
+        return redirect(url_for('show_home'))
+
+
+@app.route('/account/viewOrders_<user_type>')
 def show_admin_orders(user_type):
-    if 'current ven' in session:
+    if 'confirm_order' in session:
+        order_message = session.pop('confirm_order')
+    else:
+        order_message = False
+    if 'current_ven' in session:
         current_user = session['current_ven']
         user_info = conn.execute(
             text(f'select * from users_mast natural join vendors where username = \'{current_user}\'')).all()
         phone = phone_format(str(user_info[0][3]))
-        all_products = conn.execute(text(
-            f'select prod_no,title,description,category,display_pic,pm.vendor_id from product_mast pm natural join vendors natural join users_mast where username = \'{current_user}\' ;')).all()
-        # product_details = conn.execute(text(
-        #     f'select pd.config_id,pd.prod_no,pd.color,pd.size,pd.price,pd.qty,pd.config_display from product_details pd natural join product_mast natural join vendors natural join users_mast where username = \'{current_user}\' ')).all()
         product_count = conn.execute(text(
             f'select count(category),category from product_mast where vendor_id = \'{user_info[0][8]}\' group by category')).all()
-        orders = conn.execute(text(f'select * from orders where  user_no = {user_info[0][0]} and status \'Pending\''))
-        print("VENDOR")
-        return render_template('admin_orders.html', user_info=user_info[0], phone=phone,
-                               all_products=all_products, orders=orders, admin=False,
-                               product_count=product_count,  current_ven=current_user)
+        orders = conn.execute(text(f'select * from orders where status =\'Pending\''))
+        return render_template('admin_orders.html', user_info=user_info[0], phone=phone,orders=orders, admin=False,
+                               product_count=product_count,  current_ven=current_user, order_message=order_message)
     elif 'admin' in session:
-        print()
+        current_user = session['admin']
+        user_info = conn.execute(
+            text(f'select * from users_mast where username = \'{current_user}\'')).all()
+        product_count = conn.execute(text(
+            f'select count(category),category from product_mast group by category')).all()
+        user_count = conn.execute(text(
+            f'select count(user_no),type from users_mast group by type')).all()
+        orders = conn.execute(text(f'select o.order_no,o.user_no,concat(u.first_name, \' \', u.last_name) as name,date(o.ord_date),o.total,o.status from orders o join users_mast u on (u.user_no=o.user_no) order by order_no desc')).all()
+        order_details = conn.execute(text(f'select od.order_no,od.config_id,p.title,od.qty,od.price_paid,pd.price,pd.color,pd.size,od.confirm_by,p.display_pic,pd.config_display from order_details od join product_details pd on (od.config_id=pd.config_id) join product_mast p on (pd.prod_no=p.prod_no)')).all()
+        phone = phone_format(str(user_info[0][3]))
+        return render_template('admin_orders.html', user_info=user_info[0], phone=phone,
+                               product_count=product_count, user_count=user_count,
+                               current_ven=current_user,orders=orders,order_details=order_details,order_message=order_message, admin=True)
+    else:
+        return redirect(url_for('show_home'))
+
+@app.route('/account/viewOrders_<user_type>/confirm_<order_no>')
+def confirm_order(user_type,order_no):
+    if 'current_ven' in session:
+        return redirect(url_for('show_admin_orders',user_type=user_type))
+    elif 'admin' in session:
+        conn.execute(text(f'update order_details set confirm_by = \'{user_type}\' where order_no = {order_no}'))
+        conn.execute(text(f'update orders set status = \'Shipped\' where order_no = {order_no}'))
+        session['confirm_order'] = 'Order Confirmed'
+        return redirect(url_for('show_admin_orders',user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 

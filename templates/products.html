@@ -1,16 +1,53 @@
 {%extends 'base.html'%}
 {%block title%}Wright Store | Products{%endblock%}
 {%block body%}
-    <div class="display_product_cont">
-        {% for item in products%}
-            <div class="display_product_card">
-                {% if item[-1] != None %}
-                    <a href="{{url_for('show_product',config_id=item[0])}}"><img style="" src="{{item[-1]}}" alt="{{item[2]| title}}" srcset=""></a>
-                {%else%}
-                    <a href="{{url_for('show_product',config_id=item[0])}}"><img style="" src="{{item[-2]}}" alt="{{item[2]| title}}" srcset=""></a>
-                {%endif%}
-                <a href="{{url_for('show_product',config_id=item[0])}}"><h4 class="product_name">{{item[2]| title}} {{item[4]| title}} {{item[5]| upper}}</h4></a>
-            </div>
-        {%endfor%}
+    <div>
+        <div class="filter_cont">
+            <div class="filter">
+                <h1 class="filter_label">Filter By:</h1>
+                <div class="underline"></div>
+                <form action="{{url_for('show_category_products')}}"method="get" class="next_to">
+                    <label for="category" class="filter_label">Category:</label>
+                    <select onchange="this.form.submit()" name="category" id="">
+                        <option hidden="hidden" value="">Select Category</option>
+                        <option value="Console">Consoles</option>
+                        <option value="Game">Games</a></option>
+                        <option value="Accessory">Accessories</option>
+                    </select>
+                </form>
+                <form action="{{url_for('show_color_products')}}" method="get">
+                    <label for="color" class="filter_label">Colors:</label>
+                    <select onchange="this.form.submit()" name="color" id="">
+                        <option hidden="hidden" value="">Select Color</option>
+                        <option value="">None</option>
+                        {%for color in colors%}
+                            <option value="{{color[0]}}">{{color[0]| title}}</option>
+                        {%endfor%}
+                    </select>
+                </form>
+                <form action="{{url_for('show_size_products')}}" method="get">
+                    <label for="brand" class="filter_label">Sizes:</label>
+                    <select onchange="this.form.submit()" name="size" id="">
+                        <option hidden="hidden" value="">Select Size</option>
+                        <option value="">None</option>
+                        {%for size in sizes%}
+                            <option value="{{size[0]}}">{{size[0]| title}}</option>
+                        {%endfor%}
+                    </select>
+                </form>
+            </div> 
+        </div>
+        <div class="display_product_cont">
+            {% for item in products%}
+                <div class="display_product_card">
+                    {% if item[-1] != None %}
+                        <a href="{{url_for('show_product',config_id=item[0])}}"><img src="{{item[-1]}}" alt="{{item[2]| title}}" srcset=""></a>
+                    {%else%}
+                        <a href="{{url_for('show_product',config_id=item[0])}}"><img src="{{item[-2]}}" alt="{{item[2]| title}}" srcset=""></a>
+                    {%endif%}
+                    <a href="{{url_for('show_product',config_id=item[0])}}"><h4 class="product_name">{{item[2]| title}} {{item[4]| title}} {{item[5]| upper}}</h4></a>
+                </div>
+            {%endfor%}
+        </div>
     </div>
 {%endblock%}

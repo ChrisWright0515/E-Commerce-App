@@ -16,22 +16,26 @@
     {%endif%}
   <div class="admin_card_container">
     {%for account in all_accounts%}
-      <div class="profile_card admin_view_card">
-        <div class="profile_container">
+      <div class="admin_view_card">
+        <!-- <div class="profile_container">
             <img src="https://picsum.photos/200/300" alt="{{account[1]| title}}">
-        </div>
+        </div> -->
             <div class="name_container">
-                <h2 class="vendor_name card_title">{{account[1] | title}}</h2>
+                {%if account[2] != None%}
+                    <h2 class="vendor_name card_title">{{account[1] | title}} {{account[2] | title}}</h2>
+                {%else%}
+                    <h2 class="vendor_name card_title">{{account[1] | title}}</h2>
+                {%endif%}
                 <div class="underline"></div>
                 <div class="contact">
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         <p class="contact_label">User Number:</p>
                         <p>{{account[0]}}</p>
                     </div>
 
                     <div class="underline"></div>
 
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         {%if account[7] == 'VEN'%}
                             <p class="contact_label">Company Name:</p>
                         {%else%}
@@ -44,34 +48,34 @@
 
                     {%if account[2] == None%}
                     {%else%}
-                        <div class="contact_label_cont flex_cont">
+                        <div class="next_to">
                             <p class="contact_label">Last Name:</p>
                             <p>{{account[2]}}</p>
                         </div>
                         <div class="underline"></div>
                     {%endif%}
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         <p class="contact_label">Phone:</p>
                         <p>{{phone_format(account[3]| string)}}</p>
                     </div>
 
                     <div class="underline"></div>
 
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         <p class="contact_label">Email:</p>
                         <p>{{account[4]}}</p>
                     </div>
 
                     <div class="underline"></div>
 
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         <p class="contact_label">Username:</p>
                         <p>{{account[5]}}</p>
                     </div>
 
                     <div class="underline"></div>
 
-                    <div class="contact_label_cont flex_cont">
+                    <div class="next_to">
                         <p class="contact_label">Type:</p>
                         <p>{{account[7]}}</p>
                     </div>

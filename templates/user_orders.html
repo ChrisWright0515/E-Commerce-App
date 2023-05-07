@@ -29,6 +29,58 @@
     <div class="title">
         <h2 class="header">Orders</h2>
     </div>
-    {%for order in orders%}
+    <section class="orders_card_container center">
+        {%for order in orders%}
+            <div class="product_card order">
+                <div class="order_header">
+                    <p class="order_title order_main">Order Date: {{order[2]}}</p>
+                    <p class="order_title order_main">Order Number: {{order[0]}}</p>
+                </div>
+                {%for product in order_details %}
+                    
+                    {%if order[0] | int == product[0]| int%}
+                        <div class="order_details">
+                            {%if product[-1] == None or product[-1] == ''%}
+                                <img class="order_img" src="{{product[-2]}}" alt="">
+                            {%else%}
+                                <img class="order_img" src="{{product[-1]}}" alt="">
+                            {%endif%}
+                            <p class="order_title order_detail">
+                                {%if product[6] == '' and product[7] == ''%}
+                                    {{product[2] | title}}
+                                {%elif product[6] != '' and product[7] == '' %}
+                                    {{product[2] | title}}  {{product[6] | title}}
+                                {%elif product[6] == '' and product[7] != ''%}
+                                    {{product[2] | title}}  {{product[7]}}
+                                {%else%}
+                                    {{product[2] | title}}  {{product[6] | title}}  {{product[7]}}
+                                {%endif%}
+                            </p>
+                            <p class="order_title order_detail">Quantity: {{product[3]}}</p>
+                            {%if product[5] | float != product[4] | float%}
+                                <p class="order_title order_detail">Original Price: ${{ '{:,.2f}'.format(product[5]) }}</p>
+                                <p class="order_title order_detail">Price Paid: ${{ '{:,.2f}'.format(product[4]) }}</p>
+                            {%else%}
+                                <p class="order_title order_detail">Price Paid: ${{ '{:,.2f}'.format(product[4]) }}</p> 
+                            {%endif%}
+                        </div>
+                        <div class="underline"></div>
+                    {%endif%}
+                    
+                {%endfor%}
+                <div class="next_to">
+                    {%if order[-1] == 'Pending'%}
+                    <p class="order_main" >Status: <b style="color: red;font-style: italic;">{{order[-1]}}</b></p>
+                    {%else%}
+                        <p class="order_main" >Status: <b style="color: green;">{{order[-1]}}</b></p>
+                    {%endif%}
+                    <h1 class="order_title order_total">Order Total: ${{ '{:,.2f}'.format(order[3]) }}</h1>
+                </div>
 
+                <div class="show_review">
+                    <form action="" method="post"></form>
+                </div>
+            </div>
+        {%endfor%}
+    </section>
 {%endblock%}

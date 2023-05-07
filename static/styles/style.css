@@ -29,6 +29,29 @@ a{
 button{
     cursor:pointer;
 }
+select{
+    cursor:pointer;
+    border: none;
+    padding: 5px;
+    width:auto;
+    overflow: hidden;
+    box-shadow: 0px 0px 5px -3px #00000020;
+    transition: .4s all;
+}
+select:hover{
+    box-shadow: 0px 0px 3px 1px #00000020;
+
+}
+select:focus{
+    outline:none;
+    box-shadow: 0px 0px 3px 1px #00000020;
+}
+option{
+    cursor:pointer;
+}
+option:hover{
+    background-color: #00000020;
+}
 .header{
     font-family: 'Press Start 2P', cursive;
     background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
@@ -489,6 +512,7 @@ input[type=submit]:not(.head_submit):hover{
 }
 .contact p{
     margin: .5rem auto;
+    font-size: 150%;
 }
 .contact_info{
     background: linear-gradient(to right,rgb(0, 0, 0),#FD0000);
@@ -878,10 +902,13 @@ input[type=submit]:not(.head_submit):hover{
 
 /*ALL PRODUCTS PAGE*/
 .display_product_cont{
+    min-height: 100vh;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    padding: 1rem;
+    margin: 2rem 0;
 }
 .display_product_card{
     display: flex;
@@ -896,6 +923,19 @@ input[type=submit]:not(.head_submit):hover{
     margin: 2.5% 1.5%;
     position: relative;
     transition:.5s;
+}
+.filter_cont{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 30%;
+    height: 100vh;
+    float: left;
+    background-color: #f3f3f3;
+    position: sticky;
+    box-shadow: -5px 5px 10px;
+    bottom: -5rem;
 }
 .display_product_card:hover{
     box-shadow: 0px 10px 30px #00000020;
@@ -1088,6 +1128,65 @@ img.small_pic{
     cursor: pointer;
 }
 .go_to_checkout:hover{
+    background-color: #fd0000;
+    color: #fff;
+    box-shadow: 0 0 10px;
+}
+
+/*ORDERS*/
+.order{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem auto;
+    font-size:70%
+}
+.order_header{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+}
+.order_img{
+    width: 100px;
+    height: 100px;
+    margin: 0 0.5rem;
+    box-shadow: 0px 10px 30px #00000020;
+}
+.order_details{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1rem auto;
+}
+.order_title{
+    background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.order_main{
+    font-size: 150%;
+}
+.order_detail{
+    margin: 0 1rem;
+}
+.confirm_order{
+    height:fit-content;
+    --bg-size: 400%;
+    font-size: 100%;
+    padding: 5px 10px;
+    border-radius: 50px;
+    border:none;
+    color: white;
+    background: linear-gradient(90deg, #000, transparent) #000;
+    text-decoration: none;
+    transition: background-color .5s;
+    /*background-color: black;
+    transition:.3s;*/
+    cursor: pointer;
+}
+.confirm_order:hover{
     background-color: #fd0000;
     color: #fff;
     box-shadow: 0 0 10px;

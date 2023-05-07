@@ -5,14 +5,64 @@
 <a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
 {%endblock%}
 {%block body%}
+    {%if order_message%}
+        {%if order_message == 'Order Confirmed'%}
+            <p style="color:green; font-size:42px;">{{order_message}}</p>
+        {%else%}
+            <p style="color:red; font-size:42px;">{{order_message}}</p>
+        {%endif%}
+    {%endif%}
     <div class="title">
-        <h2 class="header">All Accounts</h2>
+        <h2 class="header">Orders</h2>
     </div>
-  <div class="orders_card_container">
-    {%for account in all_accounts%}
-    <div class="product_card">
-        <p>{{order[0]}}</p>
-        <p>{{order[4]}}</p>
-    </div>
-    {%endfor%}
+    <section class="orders_card_container center">
+        {%for order in orders%}
+            <div class="product_card order">
+                <div class="order_header">
+                    <p class="order_title order_main">Order Date: {{order[3]}}</p>
+                    <p class="order_title order_main">Order Number: {{order[0]}}</p>
+                </div>
+                <p class="order_title order_main">Customer: {{order[2] | title}}</p>
+                {%for product in order_details %}
+                    {%if order[0] | int == product[0]| int%}
+                        <div class="order_details">
+                            {%if product[-1] == None or product[-1] == ''%}
+                                <img class="order_img" src="{{product[-2]}}" alt="">
+                            {%else%}
+                                <img class="order_img" src="{{product[-1]}}" alt="">
+                            {%endif%}
+                            <p class="order_title order_detail">
+                                {%if product[6] == '' and product[7] == ''%}
+                                    {{product[2] | title}}
+                                {%elif product[6] != '' and product[7] == '' %}
+                                    {{product[2] | title}}  {{product[6] | title}}
+                                {%elif product[6] == '' and product[7] != ''%}
+                                    {{product[2] | title}}  {{product[7]}}
+                                {%else%}
+                                    {{product[2] | title}}  {{product[6] | title}}  {{product[7]}}
+                                {%endif%}
+                            </p>
+                            <p class="order_title order_detail">Quantity: {{product[3]}}</p>
+                            {%if product[5] | float != product[4] | float%}
+                                <p class="order_title order_detail">Original Price: ${{ '{:,.2f}'.format(product[5]) }}</p>
+                                <p class="order_title order_detail">Price Paid: ${{ '{:,.2f}'.format(product[4]) }}</p>
+                            {%else%}
+                                <p class="order_title order_detail">Price Paid: ${{ '{:,.2f}'.format(product[4]) }}</p> 
+                            {%endif%}
+                        </div>
+                        <div class="underline"></div>
+                    {%endif%}
+                    
+                {%endfor%}
+                <div class="next_to">
+                    {%if order[-1] == 'Pending'%}
+                        <a class="confirm_order" href="{{url_for('confirm_order',user_type=user_info[7],order_no=order[0])}}">Confirm Order</a> 
+                    {%endif%}
+                    <p class="order_title order_main">Status: {{order[-1]}}</p>
+                    <p class="order_title order_main">Order Total: {{order[-2]}}</p>
+                </div>
+            </div>
+            
+        {%endfor%}
+    </section>
 {%endblock%}
