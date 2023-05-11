@@ -6,22 +6,22 @@
           <div class="profile_container">
           </div>
           {%block prof_info%}
-              <div class="name_container">
-                  <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
-                  <div class="underline"></div>
-                  <div class="contact">
-                      <div class="contact_label_cont flex_cont">
-                          <p class="contact_label">Phone Number:</p>
-                          <p class="contact_info">{{phone}}</p>
-                      </div>
-                      <div class="underline"></div>
-                      <div class="contact_label_cont flex_cont">
-                          <p class="contact_label">Email:</p>
-                          <p class="contact_info">{{user_info[4]}}</p>
-                      </div>
-                      <div class="underline"></div>
-                  </div>
-              </div>
+                <div class="name_container">
+                    <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
+                    <div class="underline"></div>
+                    <div class="contact">
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Phone Number:</p>
+                            <p class="contact_info">{{phone}}</p>
+                        </div>
+                        <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Email:</p>
+                            <p class="contact_info">{{user_info[4]}}</p>
+                        </div>
+                        <div class="underline"></div>
+                    </div>
+                </div>
           {%endblock%}
       </div>
   </section>
@@ -30,6 +30,13 @@
         <h2 class="header">Orders</h2>
     </div>
     <section class="orders_card_container center">
+        {%if complaint_message%}
+            {% if complaint_message == 'Complaint registered successfully'%}
+                <p style="color:green;font-size:42px;">{{complaint_message}}</p>
+            {%else%}
+                <p style="color:red;font-size:42px;">{{complaint_message}}</p>
+            {%endif%}
+        {%endif%}
         {%for order in orders%}
             <div class="product_card order">
                 <div class="order_header">
@@ -76,10 +83,33 @@
                     {%endif%}
                     <h1 class="order_title order_total">Order Total: ${{ '{:,.2f}'.format(order[3]) }}</h1>
                 </div>
-
-                <div class="show_review">
-                    <form action="" method="post"></form>
-                </div>
+                {%if order[-1] == 'Shipped'%}
+                    {%if order[4] == None%}
+                        <p class="view_complaints_btn"style="width:fit-content;margin:0 auto;position:relative;"><ion-icon class="arrow_btn" style="font-size: 24px;cursor:pointer;"  name="chevron-down-outline"></ion-icon><span style="position:absolute;">Have Complaints?</span></p>
+                        <div style="display: none;" class="show_review">
+                            <form action="{{url_for('return_order',order_no=order[0])}}" method="post">
+                                <div style="margin: .5rem auto;" class="col_cont">
+                                    <label for="">I would like a...</label>
+                                    <select name="complaint_demand" id="">
+                                        <option value="Return">Return</option>
+                                        <option value="Refund">Refund</option>
+                                    </select>
+                                </div>
+                                <div style="margin: .5rem auto;" class="col_cont">
+                                    <label for="">Message</label>
+                                    <textarea name="complaint_message" id="" cols="30" rows="5"placeholder="Reason For Complaint"></textarea>
+                                </div>
+                                <input type="submit" value="File Complaint">
+                            </form>
+                        </div>
+                    {%else%}
+                        <div style="margin: 2rem auto;" class="next_to">
+                            <p class="order_main order_title">Return/Refund: {{order[4]}}</p>
+                            <p class="order_main order_title"style="width:50%;">Reason: {{order[5]}}</p>
+                            <p class="order_main order_title">Status: {{order[6]}}</p>
+                        </div>
+                    {%endif%}
+                {%endif%}
             </div>
         {%endfor%}
     </section>

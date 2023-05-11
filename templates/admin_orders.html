@@ -1,12 +1,8 @@
 {%extends 'account.html'%}
 {%block title%}Wright Store | Orders {%endblock%}
-{%block admin_link%}
-<a class="admin_link" href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
-<a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
-{%endblock%}
 {%block body%}
     {%if order_message%}
-        {%if order_message == 'Order Confirmed'%}
+        {%if order_message == 'Order Confirmed' or order_message == 'Complaint Approved' or order_message == 'Complaint Rejected'%}
             <p style="color:green; font-size:42px;">{{order_message}}</p>
         {%else%}
             <p style="color:red; font-size:42px;">{{order_message}}</p>
@@ -49,6 +45,11 @@
                             {%else%}
                                 <p class="order_title order_detail">Price Paid: ${{ '{:,.2f}'.format(product[4]) }}</p> 
                             {%endif%}
+                            {%if current_ven%}
+                                {%if product[-3] == ''%}
+                                    <a class="btn" href="{{url_for('confirm_product',user_type=user_info[7],order_no=order[0],config_id=product[1])}}">Confirm Product</a>
+                                {%endif%}
+                            {%endif%}
                         </div>
                         <div class="underline"></div>
                     {%endif%}
@@ -56,11 +57,29 @@
                 {%endfor%}
                 <div class="next_to">
                     {%if order[-1] == 'Pending'%}
-                        <a class="confirm_order" href="{{url_for('confirm_order',user_type=user_info[7],order_no=order[0])}}">Confirm Order</a> 
+                        {%if admin%}
+                            <a class="confirm_order" href="{{url_for('confirm_order',user_type=user_info[7],order_no=order[0])}}">Confirm Order</a> 
+                    
+                        {%endif%}
                     {%endif%}
+                    
                     <p class="order_title order_main">Status: {{order[-1]}}</p>
                     <p class="order_title order_main">Order Total: {{order[-2]}}</p>
                 </div>
+                <div class="underline"></div>
+                {%if order[4] != None%}
+                    <div style="margin: 2rem auto;" class="next_to">
+                        <p class="order_main order_title">Return/Refund: {{order[4]}}</p>
+                        <p class="order_main order_title">Reason: {{order[5]}}</p>
+                        <p class="order_main order_title">Status: {{order[6]}}</p>
+                    </div>
+                    {%if order[6] == 'Pending'%}
+                        <div class="next_to">
+                            <a class="btn" href="{{url_for('update_complaints',user_type=user_info[7],order_no=order[0],status='Approved')}}">Confirm</a>
+                            <a class="btn" href="{{url_for('update_complaints',user_type=user_info[7],order_no=order[0],status='Rejected')}}">Reject</a>
+                        </div>
+                    {%endif%}
+                {%endif%}
             </div>
             
         {%endfor%}

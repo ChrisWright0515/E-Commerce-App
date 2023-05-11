@@ -5,7 +5,7 @@
     font-family:'Poppins', sans-serif ;
 }
 html{
-    font-size: 20px;
+    font-size: 1.2rem;
     position: relative;
     overflow-x: hidden;
     scroll-behavior: smooth;
@@ -18,9 +18,12 @@ body{
 }
 section{
     width: 100%;
-    height: 120vh;
+    min-height: 120vh;
     padding-top: 2rem;
     padding-bottom: 2rem;
+}
+ion-icon{
+    cursor: pointer;
 }
 a{
     text-decoration:none;
@@ -29,6 +32,7 @@ a{
 button{
     cursor:pointer;
 }
+
 select{
     cursor:pointer;
     border: none;
@@ -60,11 +64,23 @@ option:hover{
     font-size:200%;
     margin: 2rem auto;
 
+
 }
-.fullscreen{
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.header_light{
+    font-family: 'Press Start 2P', cursive;
+    background:linear-gradient(to right,#fff,#FD0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size:200%;
+    margin: 2rem auto;
+}
+.good_message{
+    font-size: 42px;
+    color:green
+}
+.error_message{
+    font-size: 42px;
+    color:red
 }
 body::-webkit-scrollbar {
   width: 0.5em;
@@ -83,10 +99,21 @@ h1,h2,h3,h4,h5,p{
 }
 .flex_cont{
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 .col_cont{
     display: flex;
     flex-direction: column;
+}
+.wrap_cont{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    margin: 2rem 0;
+    width: 100%;
 }
 
 /* Header*/
@@ -141,8 +168,8 @@ header{
   position: relative;
   display: inline-block;
 }
-.hamburger{
-    font-size:150%;
+.hamburger ion-icon{
+    font-size:30px;
 }
 .dropdown-content {
   display: none;
@@ -154,7 +181,7 @@ header{
   z-index: 3;
 }
 form.dropdown-content{
-    min-width:300px
+    min-width:max-content;
 }
 form.dropdown-content div{
     width:80%;
@@ -224,6 +251,9 @@ form.dropdown-content div{
     background: transparent;
     border: none;
     font-size: 18px;
+}
+#search_btn ion-icon{
+    font-size: 20px;
 }
 .head_input{
     border: none;
@@ -323,9 +353,9 @@ form.dropdown-content div{
     background-repeat: no-repeat;
     background-size: cover;
     padding-top:0;
+    height: fit-content
 }
 .hero_title{
-    position:absolute;
     position: absolute;
     font-size: 50px;
     width: fit-content;
@@ -346,8 +376,70 @@ form.dropdown-content div{
     -webkit-text-fill-color: transparent;
     transition: .5s;
 }
-/*Register form*/
+.hero_header{
+    position: absolute;
+    margin: 0 10px;
+    font-family: 'Press Start 2P', cursive;
+    background: linear-gradient(to right,#000,#FD0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: .5s;
+    z-index: 5;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    right: 0;
+    height: fit-content;
+    width: fit-content;
+    font-size: 50px;
+}
+.hero_card{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 25px;
+    width: 30%;
+    box-shadow: 0px 0px 3px #00000020;
+    padding: 1rem;
+    font-size: 60%;
+    margin: 2.5% 1.5%;
+    position: relative;
+    transition:.5s;
+}
+.hero_card a{
+    text-decoration: none;
+    cursor: pointer;
+    width: fit-content;
+    text-align: center;
+}
+.hero_card img{
+    width:50%
+}
+.hero_card:hover{
+    box-shadow: 0 0 20px #fff;
+}
+.btn{
+    --bg-size: 400%;
+    background: linear-gradient(90deg, #000, transparent) #000;
+    text-decoration: none;
+    transition: background-color .5s;
+    border: none;
+    border-radius: 50px;
+    color:white;
+    padding: 4px;
+    cursor: pointer;
+}
+.btn:hover{
+    background-color: #fd0000;
 
+}
+/*Register form*/
+.arrow_btn{
+    font-size: 24px;
+    cursor:pointer;
+}
 .card_title{
     margin:.5rem 1.5rem;
     background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
@@ -369,7 +461,7 @@ form.dropdown-content div{
 .form_style{
     background-color: #f3f3f3;
     display: flex;
-    border-radius: 20px;
+    border-radius: 1rem;
     flex-direction: column;
     margin: 2.5% auto;
     align-items: center;
@@ -408,7 +500,7 @@ form label{
     outline: none;
     padding: 2px;
     margin: .2rem auto;
-    font-size:100%;
+    font-size:1rem;
     width:80%;
 }
 input[type=submit]{
@@ -492,12 +584,34 @@ input[type=submit]:not(.head_submit):hover{
     padding: 2rem 3rem;
     box-shadow: 0px 10px 30px #00000020;
 }
-
+.profile_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile_container form{
+    flex-direction: column;
+    align-items: center;
+    width:100%;
+}
+.show_logo{
+    margin-left: 100%;
+}
+.profile_container p{
+    cursor: pointer;
+}
+.profile_container p:hover{
+    color:#fd0000
+}
 .profile_container img {
-  width: 90px;
+    height: 150px;
+    border-radius: 50px;
+    object-fit: cover;
+    box-shadow: 0 0 5px;
+  /* width: 90px;
   height: 90px;
   border-radius: 50%;
-  object-fit: cover;
+  object-fit: cover; */
 }
 .contact{
     margin:2rem auto;
@@ -573,12 +687,13 @@ input[type=submit]:not(.head_submit):hover{
     flex-direction: column;
     background-color: #fff;
     border-radius: 25px;
-    min-width: 40%;
+    width: 45%;
     padding:1rem;
     font-size:60%;
     box-shadow: 0px 10px 30px #00000020;
     margin: 2.5% 1.5%;
     position:relative;
+    height: fit-content;
 }
 .product_main{
     width:100%;
@@ -659,13 +774,35 @@ input[type=submit]:not(.head_submit):hover{
     margin:.5rem auto;
     border: none;
 }
+.product_delete{
+    position: absolute;
+    top: 10px;
+    left: 1rem;
+    cursor:pointer;
+    color: black;
+}
+.product_delete ion-icon{
+    font-size:1.3rem;
+}
+.product_delete:hover{
+    color: #FD0000;
+}
+.product_delete span{
+    display: none;
+    position: absolute;
+    bottom: -30px;
+    left: -10px;
+}
+.product_delete:hover span{
+    display: block;
+}
 .product_setting ion-icon{
     font-size:24px;
 }
 .product_edit{
     position: absolute;
-    top: 10px;
-    left: 10px;
+    top: 10rem;
+    left: 1rem;
     cursor:pointer;
 }
 .product_edit:hover{
@@ -754,6 +891,9 @@ input[type=submit]:not(.head_submit):hover{
 .add_variation:hover span{
     display:block;
 }
+.add_variation ion-icon{
+    font-size: 30px;
+}
 .detail_form_input{
     width:20%;
     border: none;
@@ -822,6 +962,17 @@ input[type=submit]:not(.head_submit):hover{
 .add_variation_pic:hover{
     color: #FD0000;
 }
+.var_img_cont{
+    display: flex;
+    justify-content: center;
+}
+.variation_img{
+    width: 50%;
+    height: 4rem;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 .disc_icon span{
     display: flex;
     width: max-content;
@@ -837,6 +988,9 @@ input[type=submit]:not(.head_submit):hover{
 }
 .disc_icon:hover span{
     display:flex;
+}
+.disc_icon ion-icon{
+    font-size: 24px;
 }
 /*ADMIN ACCOUNTS PAGE*/
 .admin_card_container{
@@ -916,7 +1070,7 @@ input[type=submit]:not(.head_submit):hover{
     flex-direction: column;
     background-color: #fff;
     border-radius: 25px;
-    width: 40%;
+    width: 30%;
     box-shadow: 0px 0px 3px #00000020;
     padding: 1rem;
     font-size: 60%;
@@ -925,20 +1079,27 @@ input[type=submit]:not(.head_submit):hover{
     transition:.5s;
 }
 .filter_cont{
+    margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    padding: 1rem;
     justify-content: space-between;
     align-items: center;
-    width: 30%;
-    height: 100vh;
-    float: left;
     background-color: #f3f3f3;
-    position: sticky;
-    box-shadow: -5px 5px 10px;
-    bottom: -5rem;
+    box-shadow: -5px 5px 10px #00000020;
+    
+}
+.filter_label{
+    background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 120%;
+}
+.filter_form{
+    display: flex;
+    align-items: center;
 }
 .display_product_card:hover{
-    box-shadow: 0px 10px 30px #00000020;
+    box-shadow: 0px 0px 30px #00000020;
 
 }
 .display_product_card a{
@@ -954,20 +1115,29 @@ input[type=submit]:not(.head_submit):hover{
     background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-size:1rem;
 }
 
 /*INDIVIDUAL PRODUCT PAGE*/
 .prod_info{
     display: flex;
+    flex-direction: column;
     width: 100%;
     justify-content: center;
+    /* height: 90vh; */
+    padding: 0;
 }
 .product_pics{
-    width: 70%;
+    width: 100%;
     display: flex;
-    flex-direction: column;
-    align-items:center;
-    justify-content:center;
+    height: 80%;
+    justify-content:space-between;
+    border-bottom: outset #00000020
+}
+.big_pic_cont{
+    width: fit-content;
+    margin: auto;
+    text-align: center;
 }
 .small_pic_cont{
     width: 100%;
@@ -976,17 +1146,20 @@ input[type=submit]:not(.head_submit):hover{
     justify-content: space-evenly;
     border-top: outset;
 }
-.small_pic_cont img{
-    width:50px;
-    height:100px
+.small_pic_div{
+    width: 25%;
+    text-align: center;
 }
-.small_pic_cont .slick-slide img{
-    width:100px;
-    height:100px;
+#big_pic{
+    padding: 2rem;
+    height: 50%;
+    width: 60%;
 }
+
 img.small_pic{
-        width:100px;
-        margin: 10px 0;
+    width: 50%;
+    padding: 1rem;
+    margin: auto;
 }
 .small_pic:hover{
     cursor: pointer;
@@ -994,7 +1167,6 @@ img.small_pic{
 }
 .product_options{
     width: 30%;
-    min-height: 500px;
     background-color: #f3f3f3;
     border-left: outset;
     padding: 1rem;
@@ -1029,7 +1201,16 @@ img.small_pic{
     color: #fff;
     box-shadow: 0 0 10px;
 }
-
+.add_review{
+    width: fit-content;
+    margin: 0 auto;
+}
+.add_review form{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 /*USER PAGE*/
 .delete_cart{
     width: fit-content;
@@ -1191,7 +1372,247 @@ img.small_pic{
     color: #fff;
     box-shadow: 0 0 10px;
 }
+.view_complaints_btn{
+    width: max-content;
+    transition: .4s;
+}
+.view_complaints_btn:hover{
+    color:#FD0000;
+}
+.view_complaints_btn span{
+    display: none;
+    width: max-content;
+    top: 20px;
+    left: -50px;
+}
+.view_complaints_btn:hover span{
+    display:block;
+}
+.show_review{
+    display: none;
+    width: 100%;
+    margin: 1rem auto;
+}
+.show_review form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/*Chat*/
+.add_chat{
+    font-size: 10rem;
+    position: relative;
+    text-align:center;
+    height: fit-content;
+
+}
+#add_chat{
+    cursor: pointer;
+    width: fit-content;
+    height: 240px;
+    margin: 0 auto;
+    position: relative;
+}
+#add_chat span{
+    display:none;
+    position: absolute;
+    font-size: 20px;
+    width: max-content;
+    left: 50px;
+    bottom: -5px;
+}
+#add_chat:hover{
+    color:#FD0000;
+}
+#add_chat:hover span{
+    display: block;
+}
+.add_chat_form{
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    font-size: initial;
+}
+.chat_card{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 25px;
+    min-width: 40%;
+    max-height: 20rem;
+    font-size: 60%;
+    box-shadow: 0px 10px 30px #00000020;
+    margin: 2.5% 1.5%;
+    position: relative;
+}
+.chat_messages{
+    width: 100%;
+    height: 90%;
+    overflow-y: scroll;
+}
+.chat_bubble_sender{
+    align-items: center;
+    position: relative;
+    display: flex;
+    padding: 10px;
+    margin: 0.5rem auto;
+    font-size: 150%;
+    justify-content: space-between;
+}
+.chat_bubble_sender p{
+    padding: 10px;
+    text-align: left;
+    background-color: #f3f3f3;
+    border-radius: 50px;
+    box-shadow: 0 0 5px grey;
+}
+.chat_bubble_receiver{
+    align-items: center;
+    position: relative;
+    display: flex;
+    padding: 10px;
+    margin: 0.5rem auto;
+    font-size: 150%;
+    justify-content: flex-start;
+}
+.chat_bubble_receiver p{
+    padding: 10px;
+    text-align: left;
+    background-color: #FD0000;
+    border-radius: 50px;
+    box-shadow: 0 0 5px grey;
+}
+.chatbox{
+    width: 100%;
+    padding: 10px;
+    position: relative;
+}
+.send_message{
+    background: transparent;
+    border: none;
+    position: absolute;
+    right: 1rem;
+    top: 0.7rem;
+    color:#fd0000
+}
+.chat_text span{
+    position: absolute;
+    width: max-content;
+    bottom: -0.5rem;
+    right: 5rem;
+    font-size: 50%;
+}
+.delete_message{
+    color: black;
+    position: relative;
+    display: flex;
+}
+.delete_message span{
+    font-size: 70%;
+    display: none;
+}
+.delete_message:hover{
+    color: #FD0000;
+}
+.delete_message:hover span{
+    display: block;
+}
+.delete_thread{
+    color: black;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    margin-right: 80%;
+}
+.delete_thread ion-icon{
+    font-size: 24px;
+}
+.delete_thread:hover{
+    color: #FD0000;
+}
+.delete_thread span{
+    font-size: 70%;
+    position: absolute;
+    display: none;
+    width: max-content;
+    bottom: -5px;
+}
+.delete_thread:hover span{
+    display: block;
+}
+/* Reviews */
+input[type="radio"]{
+    display: none;
+}
+.review{
+    width: fit-content;
+    max-width: 80%;
+    margin: 2rem auto;
+}
+.star{
+    color: #FD0000;
+    font-size:2rem;
+    margin: 0 .3rem;
+}
+.review_header{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+.review_info{
+    margin: 1rem auto;
+}
+.review_title{
+    background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 2rem;
+}
+.review_star_cont{
+    margin-bottom: 1rem;
+}
+.review_star{
+    color: #FD0000;
+    font-size: 1.5rem;
+}
+.review_message{
+    width: 100%;
+    height: fit-content;
+    text-align: center;
+    overflow-wrap: break-word;
+}
+.review_filter{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    margin: 0 auto;
+}
+.review_filter label{
+    font-size: 200%;
+}
+.review_filter form{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+.filter_star_cont{
+    margin: 1rem auto;
+}
+.review_text{
+    
+}
 /* FOOTER */
+#footer{
+    padding: 1rem;
+    
+}
 .regular_footer{
     width: 100%;
     clear: both;
@@ -1263,6 +1684,7 @@ img.small_pic{
     align-items: center;
     box-shadow: black 0 0 5px;
     z-index: 4;
+    transition: all 1s;
 }
 .sticky{
     position: fixed;
@@ -1300,4 +1722,28 @@ img.small_pic{
   to {
     background-position: var(--bg-size) 400%;
   }
+}
+
+/* SMaller screens and Bigger screens */
+
+
+@media only screen and (max-width: 420px) {
+    body *{
+        font-size: .8rem;
+    }
+    div.display_product_card{
+        width: 45%;
+    }
+    div.display_product_card img{
+        width: 90%;
+    }
+}
+
+@media only screen and (min-width: 2000px){
+    html{
+        font-size: 3.5rem;
+    }
+    ion-icon{
+        font-size: 1.5rem;
+    }
 }

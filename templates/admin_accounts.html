@@ -1,8 +1,5 @@
 {%extends 'account.html'%}
 {%block title%}Wright Store | All Accounts{%endblock%}
-{%block admin_link%}
-<a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
-{%endblock%}
 {%block body%}
     <div class="title">
         <h2 class="header">All Accounts</h2>
@@ -86,9 +83,9 @@
                                 <form style="display:flex;flex-direction:column;align-items:center;" action="{{url_for('approve_vendor',user_type=user_info[7],user_no=account[0])}}" method="post">
 
                                 </form>
-                                <a class="admin_link approve_vendor"style="position:absolute;bottom:1rem;width:fit-content">{{account[0]}}Approve Vendor{{vendors[i][0]}}</a>
+                                <a class="admin_link approve_vendor"style="position:absolute;bottom:1rem;width:fit-content">Approve Vendor</a>
                             {%else%}
-                                {%for i in range(vendors[0]| length)%}
+                                {%for i in range(vendors[0] | length)%}
                                     {%if account[0] == vendors[0][i]%}
                                         <div class="contact_label_cont flex_cont">
                                             <p class="contact_label">Vendor ID:</p>

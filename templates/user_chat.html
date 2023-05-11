@@ -1,0 +1,95 @@
+{%extends 'base.html'%}
+{%block title%} Wright Store | Orders {%endblock%}
+{%block body%}
+  <section class="center">
+      <div class="profile_card">
+          <div class="profile_container">
+          </div>
+          {%block prof_info%}
+              <div class="name_container">
+                    {%if user_info[2] != None%}
+                        <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
+                    {%else%}
+                        <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                    {%endif%}
+                    <div class="underline"></div>
+                    <div class="contact">
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Phone Number:</p>
+                            <p class="contact_info">{{phone}}</p>
+                        </div>
+                        <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label">Email:</p>
+                            <p class="contact_info">{{user_info[4]}}</p>
+                        </div>
+                        <div class="underline"></div>
+                    </div>
+              </div>
+          {%endblock%}
+      </div>
+  </section>
+  <div class="page_underline"></div>
+    <div class="title">
+        <h2 class="header">Chat</h2>
+    </div>
+    {%if chat_message%}
+        {%if chat_message == 'Message sent'%}
+            <p style="color:green; font-size:42px;">{{chat_message}}</p>
+        {%else%}
+            <p style="color:red; font-size:42px;">{{chat_message}}</p>
+        {%endif%}
+    {%endif%}
+    <section class="product_container add_chat_container">
+        <div  class="product_card add_chat">
+            <p id="add_chat" class="animate__animated"><ion-icon name="add-circle-outline"></ion-icon><span style="position: absolute;">Add Chat</span></p>
+            <form class="add_chat_form" style="display:none;" action="{{url_for('create_chat')}}" method="post">
+                <h2 class="header">Create Chat</h2>
+                <input class="input" type="text" name="recipient"placeholder="Recipient Username or Email" id="">
+                <input class="input" type="text" name="message" placeholder="Message" id="">
+                <input class="input" type="submit" value="Send">
+            </form>
+        </div>
+        {% for chat in chats%}
+            <div class="chat_card">
+                <a class=" delete_thread" href="{{url_for('delete_thread',chat_no=chat[0])}}"><ion-icon name="trash-outline"></ion-icon><span>Delete Chat</span></a>
+                <div style="padding:0 20px; font-size: 70%; padding-bottom: 0;flex-direction: row-reverse;" class="next_to">
+                    <p class="header" style="margin:0;">{{chat[3] | title}}</p>
+                    <p class="header" style="margin:0;">{{chat[4] | title}}</p>
+                </div>
+                <div style="margin:0;" class="underline"></div>
+                <div class="chat_messages">
+                    {%for message in chat_messages %}
+                        {%if message[0] == chat[0]%}
+                            {%if message[2] == user_info[0] %}
+                                <div class="chat_bubble_sender">
+                                    <a class="delete_message" href="{{url_for('delete_message',chat_no=message[0],time=message[6])}}"><ion-icon name="trash-outline"></ion-icon><span>Delete Message</span></a>
+                                    {%if message[1][:4] == 'http'%}
+                                        <p style="background: transparent;box-shadow:0 0 0px;" class="chat_text"><img style="width:100px; " src="{{message[1]}}" alt="" srcset=""><span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
+                                    {%else%}
+                                        <p class="chat_text">{{message[1]}} <span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
+                                    {%endif%}
+                                </div>
+                            {%else%}
+                                <div class="chat_bubble_receiver">
+                                    {%if message[1][:4] == 'http'%}
+                                        <p style="background: transparent;box-shadow: 0 0 0px;" class="chat_text"><img style="width:100px; " src="{{message[1]}}" alt="" srcset=""><span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
+                                    {%else%}
+                                        <p class="chat_text">{{message[1]}} <span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
+                                    {%endif%}
+                                    <!-- <p class="chat_text">{{message[1]}} <span>{{message[3]}} to {{message[5]}} {{message[6]}}</p> -->
+                                </div>
+                            {%endif%}
+                            <div class="chat_bubble_sender"></div>
+                        {%endif%}
+                    {%endfor%}
+                </div>
+                <div style="box-shadow: 0px -1px 4px; margin:0;" class="underline"></div>
+                <form class="chatbox" action="{{url_for('send_message',chat_no=chat[0])}}" method="post">
+                    <input style="width:100%" class="input"placeholder="Enter Message" type="text" name="chat_message" id="">
+                    <button class="send_message" type="submit"><ion-icon name="send"></ion-icon></button>
+                </form>
+            </div>
+        {%endfor%}
+    </section>
+{%endblock%}

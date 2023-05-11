@@ -10,13 +10,15 @@ let add_images_select = document.querySelectorAll(".add_images_select")
 let add_variation_pic = document.querySelectorAll(".add_variation_pic")
 let discount = document.querySelectorAll(".show_disc")
 let disc_type = document.querySelectorAll(".disc_type")
+let add_logo = document.querySelectorAll(".show_logo")
 function edit_product(){
     user_type = document.getElementById('user_type')
     this.style.display = 'none'
     let card = this.parentNode;
     child = card.children
     values = []
-    form = child[9].nextElementSibling
+    form = child[8].nextElementSibling
+    console.log(form)
     inputs = card.querySelectorAll('.product_input')
     picture = card.querySelectorAll('.img')
     source = picture[0].id
@@ -153,6 +155,18 @@ function show_disc_dur(){
         dur_input.style.display = 'none'
     }
 }
+function show_logo(){
+    const logo_cont = this.nextElementSibling
+    console.log(logo_cont)
+    if (logo_cont.style.display == 'none'){
+        $(logo_cont).slideDown(500)
+        logo_cont.style.display = 'flex'
+        logo_cont.style.margin = 'auto'
+    }else{
+        $(logo_cont).slideUp(500)
+    }
+
+};
 $('#add_product').on('click', () => {
     $('#add_product').hide()
     $('.create_prod_message').hide()
@@ -188,4 +202,7 @@ discount.forEach(button => {
 });
 disc_type.forEach(button => {
     button.addEventListener('change', show_disc_dur)
+});
+add_logo.forEach(button => {
+    button.addEventListener('click', show_logo)
 });
