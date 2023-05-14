@@ -308,6 +308,10 @@ def login():
 def show_account_page(user_type):
     
     if 'current_ven' in session:
+        if 'delete_prod_message' in session:    
+            delete_prod_message = session.pop('delete_prod_message')
+        else:
+            delete_prod_message = False
         if 'edit_prod_message' in session:
             edit_message = session.pop('edit_prod_message')
         else:
@@ -366,8 +370,12 @@ def show_account_page(user_type):
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
-                               disc_message=disc_message,discounts=discounts,add_logo_message=add_logo_message, admin=False)
+                               disc_message=disc_message,discounts=discounts,add_logo_message=add_logo_message,delete_prod_message=delete_prod_message, admin=False)
     elif 'admin' in session:
+        if 'delete_prod_message' in session:    
+            delete_prod_message = session.pop('delete_prod_message')
+        else:
+            delete_prod_message = False
         if 'edit_prod_message' in session:
             edit_message = session.pop('edit_prod_message')
         else:
@@ -407,6 +415,7 @@ def show_account_page(user_type):
             f'select count(config_id),category from product_details natural join product_mast group by category')).all()
         user_count = conn.execute(text(
             f'select count(user_no),type from users_mast group by type')).all()
+        print(user_count)
         all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
         disc_user = put_in_list(all_discounts, 0)
         disc_type = put_in_list(all_discounts, 1)
@@ -424,7 +433,7 @@ def show_account_page(user_type):
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
-                               disc_message=disc_message,discounts=discounts, admin=True)
+                               disc_message=disc_message,discounts=discounts,delete_prod_message=delete_prod_message, admin=True)
     else:
         return redirect(url_for('show_home'))
 
@@ -450,6 +459,10 @@ def show_accounts(user_type):
             approve_vendor_message = session.pop('approve_vendor_message')
         else:
             approve_vendor_message = False
+        if 'create_message' in session:
+            create_message = session.pop('create_message')
+        else:
+            create_message = False
         current_user = session['admin']
         user_info = conn.execute(
             text(f'select * from users_mast where username = \'{current_user}\'')).all()
@@ -466,12 +479,68 @@ def show_accounts(user_type):
         vendors = [vendor_id, vendors_name]
         return render_template('admin_accounts.html', user_info=user_info[0], phone=phone, product_count=product_count,
                                user_count=user_count, all_accounts=all_accounts, phone_format=phone_format,
-                               vendors=vendors, approve_vendor_message=approve_vendor_message, admin=True)
+                               vendors=vendors, approve_vendor_message=approve_vendor_message,create_message=create_message, admin=True)
     else:
         return redirect(url_for('show_home'))
 
 
-
+# Create admin account and insert into users_mast
+@app.route('/account/createAdmin_<user_type>', methods=['POST'])
+def create_admin(user_type):
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    phone = request.form.get('phone')
+    email = request.form.get('email')
+    username = request.form.get('username')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_pass')
+    if 'admin' in session:
+        if first_name != '' and last_name != '' and phone != '' and email != '' and username != '' and password != '' and confirm_password != '':
+            dupe_username = conn.execute(text(f'select * from users_mast where username = \'{username}\'')).all()
+            if len(dupe_username) < 1:
+                dupe_email = conn.execute(text(f'select * from users_mast where email = \'{email}\'')).all()
+                if len(dupe_email) < 1:
+                    dupe_phone = conn.execute(text(f'select * from users_mast where phone_number = \'{phone}\'')).all()
+                    if len(dupe_phone) < 1:
+                        if check_pass(password) == 'Good':
+                            if password == confirm_password:
+                                hash_pass = hashing(password).hexdigest()
+                                conn.execute(text(f'insert into users_mast (first_name, last_name, phone_number, email, username, password, type) values (\'{first_name}\', \'{last_name}\', \'{phone}\', \'{email}\', \'{username}\', \'{hash_pass}\', \'ADM\')'))
+                                conn.commit()
+                                session['create_message'] = 'Account Created'
+                                return redirect(url_for('show_accounts', user_type=user_type))
+                            else:
+                                session['create_message'] = 'Passwords do not match'
+                                return redirect(url_for('show_accounts', user_type=user_type))
+                        elif check_pass(password) == 'Num':
+                            session['create_message'] = 'Password must contain at least one number'
+                            return redirect(url_for('show_accounts', user_type=user_type))
+                        elif check_pass(password) == 'Lower':
+                            session['create_message'] = 'Password must contain at least one lowercase letter'
+                            return redirect(url_for('show_accounts', user_type=user_type))
+                        elif check_pass(password) == 'Upper':
+                            session['create_message'] = 'Password must contain at least one uppercase letter'
+                            return redirect(url_for('show_accounts', user_type=user_type))
+                        elif check_pass(password) == 'Special':
+                            session['create_message'] = 'Password must contain at least one special character'
+                            return redirect(url_for('show_accounts', user_type=user_type))
+                        else:
+                            session['create_message'] = 'Password must be at least 8 characters long'
+                            return redirect(url_for('show_accounts', user_type=user_type))
+                    else:
+                        session['create_message'] = 'Phone number already exists'
+                        return redirect(url_for('show_accounts', user_type=user_type))
+                else:
+                    session['create_message'] = 'Email already exists'
+                    return redirect(url_for('show_accounts', user_type=user_type))
+            else:
+                session['create_message'] = 'Username already exists'
+                return redirect(url_for('show_accounts', user_type=user_type))
+        else:
+            session['create_message'] = 'Please fill all fields'
+            return redirect(url_for('show_accounts', user_type=user_type))
+    else:
+        return redirect(url_for('show_home'))
 
 @app.route('/account/<user_type>approve_vendor<user_no>')
 def show_approve_vendor(user_type, user_no):
@@ -566,16 +635,49 @@ def create_product(user_type):
         return redirect(url_for('show_home'))
 
 
-@app.route('/account/<user_type>/delete<prod_no>')
+@app.route('/account/<user_type>/delete<prod_no>',methods=['POST'])
 def delete_product(user_type, prod_no):
     if request.method == 'POST':
-        print()
+        if 'current_ven' or 'admin' in session:
+            conn.execute(text(f'delete from discounts where prod_no = {prod_no}'))
+            conn.commit()
+            conn.execute(text(f'delete from reviews where prod_no = {prod_no}'))
+            conn.commit()
+            conn.execute(text(f'delete from product_imgs where prod_no = {prod_no}'))
+            conn.commit()
+            conn.execute(text(f'delete from cart_items where config_id in (select config_id from product_details where prod_no = {prod_no}) '))
+            conn.commit()
+            conn.execute(text(f'delete from order_details where config_id in (select config_id from product_details where prod_no = {prod_no}) '))
+            conn.commit()
+            conn.execute(text(f'delete from product_details where prod_no = {prod_no} '))
+            conn.commit()
+            conn.execute(text(f'delete from product_mast where prod_no = {prod_no} '))
+            conn.commit()
+            session['delete_prod_message'] = 'Product Deleted'
+            return redirect(url_for('show_account_page', user_type=user_type))
+        else:
+            return redirect(url_for('show_home'))
     else:
         if 'current_ven' in session or 'admin' in session:
             return redirect(url_for('show_account_page', user_type=user_type))
         else:
             return redirect(url_for('show_home'))
 
+
+# Delete product variation from product_details table
+@app.route('/account/<user_type>/delete/<config_id>')
+def delete_product_variation(user_type, config_id):
+    if 'current_ven' or 'admin' in session:
+        conn.execute(text(f'delete from cart_items where config_id = {config_id}'))
+        conn.commit()
+        conn.execute(text(f'delete from order_details where config_id = {config_id}'))
+        conn.commit()
+        conn.execute(text(f'delete from product_details where config_id = {config_id}'))
+        conn.commit()
+        session['delete_prod_message'] = 'Product Variation Deleted'
+        return redirect(url_for('show_account_page', user_type=user_type))
+    else:
+        return redirect(url_for('show_home'))
 
 @app.route('/account/<user_type>/edit<prod_no>')
 def show_vendor_edit_page(user_type, prod_no):
@@ -728,10 +830,10 @@ def show_add_images(user_type, prod_no):
 @app.route('/account/<user_type>add_image<prod_no>', methods=['POST'])
 def add_prod_images(user_type, prod_no):
     if 'current_ven' in session or 'admin' in session:
-        pics = request.form
+        pics = request.form.getlist('img_url')
         prod_pics = []
         for image in pics:
-            prod_pics.append(pics[image])
+            prod_pics.append(image.strip())
         for image in prod_pics:
             if image != '':
                 dupe_img = conn.execute(
@@ -861,6 +963,45 @@ def show_vendor_products(vendor_id):
     colors = conn.execute(text(f'select distinct(color) from product_details where color != "";')).all()
     products = conn.execute(text(
         f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast where vendor_id = \'{vendor_id}\';')).all()
+    if 'current_user' in session:
+        current_user = session['current_user']
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, current_user=current_user, cart=cart)
+    elif 'admin' in session:
+        admin = session['admin']
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, cart=False, admin=admin)
+    elif 'current_ven' in session:
+        current_ven = session['current_ven']
+        return render_template('products.html',colors=colors,sizes=sizes, products=products, cart=False, current_user=current_ven)
+    else:
+        if 'reg_message' in session:
+            user_reg_message = session.pop('reg_message')
+            ismessage = True
+        else:
+            user_reg_message = False
+            ismessage = False
+        if 'ven_message' in session:
+            vendor_reg_message = session.pop('ven_message')
+            is_ven_message = True
+        else:
+            vendor_reg_message = False
+            is_ven_message = False
+        return render_template('products.html',user_reg_message=user_reg_message,ismessage=ismessage,vendor_reg_message=vendor_reg_message,is_ven_message=is_ven_message,colors=colors,sizes=sizes, cart=False, products=products)
+    
+
+@app.route('/products/available')
+def show_available_products():
+    availability = request.args.get('available')
+    print(availability)
+    sizes = conn.execute(text(f'select distinct(size) from product_details where size != "";')).all()
+    colors = conn.execute(text(f'select distinct(color) from product_details where color != "";')).all()
+    if availability == 'In Stock':
+        products = conn.execute(text(
+            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast where qty > 0;')).all()
+    else:
+        products = conn.execute(text(
+            f'select config_id,prod_no,title,description,color,size,price,qty,display_pic,config_display from product_details natural join product_mast where qty = 0;')).all()
     if 'current_user' in session:
         current_user = session['current_user']
         cart = conn.execute(text(
@@ -1047,13 +1188,15 @@ def show_product(config_id):
             f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{username}\')')).all()
         user_email = conn.execute(text(f'select email from users_mast where username = \'{username}\'')).all()
         user_email = user_email[0][0]
-        print(user_email)
         current_user = session['current_user']
         return render_template('product.html', product=product[0], imgs=imgs, current_user=current_user,
                                add_cart_message=add_cart_message, cart=cart,review_message=review_message,reviews=reviews,user_email=user_email)
     elif 'admin' in session:
         admin = session['admin']
         return render_template('product.html', product=product[0], imgs=imgs, cart=False, admin=admin,review_message=review_message,reviews=reviews)
+    elif 'current_ven' in session:
+        current_ven = session['current_ven']
+        return render_template('product.html', product=product[0], imgs=imgs, cart=False, current_ven=current_ven,review_message=review_message,reviews=reviews)
     else:
         if 'reg_message' in session:
             user_reg_message = session.pop('reg_message')
@@ -1108,30 +1251,39 @@ def add_to_cart(config_id):
 @app.route('/user/')
 def show_user_page():
     if 'current_user' in session:
+        current_user = session['current_user']
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        user_info = conn.execute(text(
+            f'select * from users_mast where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        phone = phone_format(str(user_info[0][3]))
+        return render_template('user_account.html', user_info=user_info[0], phone=phone, current_user=current_user,cart=cart)
+    else:
+        return redirect(url_for('show_home'))
+
+
+@app.route('/user/cart')
+def show_cart():
+    if 'current_user' in session:
         if 'edit_cart_message' in session:
             edit_cart_message = session.pop('edit_cart_message')
         else:
             edit_cart_message = False
         current_user = session['current_user']
+        user_info = conn.execute(text(
+            f'select * from users_mast where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
         cart = conn.execute(text(
             f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
         cart_items = conn.execute(text(
             f'select cart_item_id,ci.user_no,ci.config_id,prod_name,prod_old_price,discount,price_after_disc,ci.qty as cart_qty,pd.qty as stock,p.description,pd.color,pd.size,ci.total,p.display_pic,pd.config_display from cart_items ci join product_details pd on (ci.config_id=pd.config_id) natural join product_mast p where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
-        user_info = conn.execute(text(
-            f'select * from users_mast where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
-        phone = phone_format(str(user_info[0][3]))
         total = conn.execute(text(
             f'select round(sum(price_after_disc * qty),2) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\') ')).all()
-        return render_template('user_account.html', user_info=user_info[0], phone=phone, cart_items=cart_items,
-                               current_user=current_user, total=total[0], edit_cart_message=edit_cart_message,cart=cart)
-    else:
-        return redirect(url_for('show_home'))
-
+        return render_template('cart.html',user_info=user_info[0] , edit_cart_message=edit_cart_message, cart_items=cart_items, current_user=current_user, total=total[0],cart=cart)
 
 @app.route('/user/cart/addqty/<cart_item_id>')
 def show_add_qty(cart_item_id):
     if 'current_user' in session:
-        return redirect(url_for('show_user_page'))
+        return redirect(url_for('show_cart'))
     else:
         return redirect(url_for('show_home'))
 
@@ -1148,10 +1300,10 @@ def add_qty(cart_item_id):
             conn.execute(text(
                 f'update cart_items set qty = {int(change_qty)}, total = (price_after_disc * {int(change_qty)}) where cart_item_id = {cart_item_id}'))
             conn.commit()
-            return redirect(url_for('show_user_page'))
+            return redirect(url_for('show_cart'))
         else:
             session['edit_cart_message'] = 'Quantity not available'
-            return redirect(url_for('show_user_page'))
+            return redirect(url_for('show_cart'))
     else:
         return redirect(url_for('show_home'))
 
@@ -1162,7 +1314,7 @@ def del_cart_item(cart_item_id):
         session['edit_cart_message'] = 'Cart Updated'
         conn.execute(text(f'delete from cart_items where cart_item_id = {cart_item_id}'))
         conn.commit()
-        return redirect(url_for('show_user_page'))
+        return redirect(url_for('show_cart'))
     else:
         return redirect(url_for('show_home'))
 
@@ -1170,10 +1322,11 @@ def del_cart_item(cart_item_id):
 @app.route('/user/cart/delete/')
 def delete_cart():
     if 'current_user' in session:
+        session['edit_cart_message'] = 'Cart Updated'
         username = session['current_user']
         conn.execute(text(f'delete from cart_items where user_no in (select user_no from users_mast where username = \'{username}\')'))
         conn.commit()
-        return redirect(url_for('show_user_page'))
+        return redirect(url_for('show_cart'))
     else:
         return redirect(url_for('show_home'))
 
@@ -1199,10 +1352,10 @@ def order_cart():
             conn.commit()
             conn.execute(text(f'update product_details pd join order_details od on (pd.config_id=od.config_id) set pd.qty = (pd.qty - od.qty) where od.order_no = {order_no[0][0]}'))
             conn.commit()
-            return redirect(url_for('show_user_page'))
+            return redirect(url_for('show_cart'))
         else:
             session['edit_cart_message'] = 'Order Failed'
-            return redirect(url_for('show_user_page'))
+            return redirect(url_for('show_cart'))
     else:
         return redirect(url_for('show_home'))
 
@@ -1222,10 +1375,24 @@ def show_orders():
         phone = phone_format(str(user_info[0][3]))
         orders = conn.execute(text(f'select o.order_no,o.user_no,date(o.ord_date),o.total,c.demand,c.description,c.status,o.status from orders o join users_mast u on (u.user_no=o.user_no) left join complaints c on (c.order_no=o.order_no) where o.user_no = {user_no} order by order_no desc')).all()
         order_details = conn.execute(text(f'select od.order_no,od.config_id,p.title,od.qty,od.price_paid,pd.price,pd.color,pd.size,od.confirm_by,p.display_pic,pd.config_display from order_details od join product_details pd on (od.config_id=pd.config_id) join product_mast p on (pd.prod_no=p.prod_no) where od.order_no in (select order_no from orders where user_no = {user_no})')).all()
-        return render_template('user_orders.html', orders=orders, order_details=order_details, user_info=user_info[0],phone=phone,current_user=current_user,complaint_message=complaint_message)
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('user_orders.html', orders=orders, order_details=order_details, user_info=user_info[0],phone=phone,current_user=current_user,complaint_message=complaint_message,cart=cart)
     else:
         return redirect(url_for('show_home'))
 
+
+@app.route('/user/orders/cancel/<order_no>')
+def cancel_order(order_no):
+    if 'current_user' in session:
+        conn.execute(text(f'delete from order_details where order_no = {order_no}'))
+        conn.commit()
+        conn.execute(text(f'delete from orders where order_no = {order_no}'))
+        conn.commit()
+        session['complaint_message'] = 'Order cancelled'
+        return redirect(url_for('show_orders'))
+    else:
+        return redirect(url_for('show_home'))
 
 @app.route('/user/orders/return/<order_no>',methods=['POST'])
 def return_order(order_no):
@@ -1346,7 +1513,9 @@ def show_chat():
         user_no = user_info[0][0]
         chats = conn.execute(text(f'select c.chat_no,c.messenger1,messenger2,u.username,u2.username from chat c join users_mast u on (c.messenger1=u.user_no) join users_mast u2 on (c.messenger2=u2.user_no) where c.messenger1 = {user_no} or c.messenger2 = {user_no}')).all()
         chat_messages = conn.execute(text(f'select chat_no,message_img,sender,u.first_name,recipient,u2.first_name,chat_sent from chat_details join users_mast u on (sender=u.user_no) join users_mast u2 on (recipient=u2.user_no) where chat_no in (select chat_no from chat where messenger1 = {user_no} or messenger2 = {user_no})')).all()
-        return render_template('user_chat.html', user_info=user_info[0], phone=phone,current_user=current_user, current_ven=False,admin=False,chat_message=chat_message,chats=chats,chat_messages=chat_messages)  
+        cart = conn.execute(text(
+            f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{current_user}\')')).all()
+        return render_template('user_chat.html', user_info=user_info[0], phone=phone,current_user=current_user, current_ven=False,admin=False,chat_message=chat_message,chats=chats,chat_messages=chat_messages,cart=cart)  
     elif 'current_ven' in session:
         current_ven = session['current_ven']
         user_info = conn.execute(
@@ -1563,7 +1732,6 @@ def filter_reviews(config_id):
     filter = request.args.get('filter_stars')
     if filter == None:
         filter = 0
-    print(filter)
     reviews = conn.execute(text(f'select * from reviews where rating = {filter} and prod_no = (select prod_no from product_details where config_id = {config_id})')).all()
     if 'add_to_cart_message' in session:
         add_cart_message = session.pop('add_to_cart_message')
@@ -1584,7 +1752,6 @@ def filter_reviews(config_id):
             f'select count(config_id) from cart_items where user_no in (select user_no from users_mast where username = \'{username}\')')).all()
         user_email = conn.execute(text(f'select email from users_mast where username = \'{username}\'')).all()
         user_email = user_email[0][0]
-        print(user_email)
         imgs = []
         for img in images:
             img_format = str(img).strip('(\'\',)')

@@ -52,6 +52,10 @@
                     {%else%}
                         
                         {%if product[6] == product[7]%}
+                            <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
+                            <p style="color:green;">${{product[7]}}</p>
+                            <p class="show_sign_in btn">Sign in to add to cart</p>
+
                         {%else%}
                             <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
                             <p style="color:red; text-decoration:line-through;">Price: {{product[6]}}</p>
@@ -63,6 +67,7 @@
                                 {%endif%}
                             {%endif%}
                             <p style="color:green;">${{product[7]}}</p>
+                            <p class="show_sign_in btn">Sign in to Add to Cart</p>
                         {%endif%}
                         
                     {%endif%}
@@ -77,7 +82,7 @@
                     </div>
                 {% endfor %}
             {% else %}
-                {% for i in range(3) %}
+                {% for i in range(4) %}
                     <div class="small_pic_div">
                         <img src="{{imgs[i]}}" alt=""class="small_pic" srcset="">
                     </div>
@@ -145,9 +150,10 @@
                     
                     <div class="underline"></div>
                     {%if review[6] != ''%}
-                        <h2 class="review_name">{{review[6]| title}}</h2>
+                        <h2 class="review_name card_title">{{review[6]| title}}</h2>
                     {%endif%}
                     <h2 class="review_message">{{review[4] | title}}</h2>
+                    <div class="underline"></div>
                     {%if admin%}
                         <a href="{{url_for('delete_review',review_no=review[0],config_id=product[0])}}"class="btn">Delete</a>
                     {%endif%}
@@ -163,15 +169,5 @@
         {%endif%}
     </section>
 {%endblock%}
-{%block script%}
-    <!-- <script>
-        let big_pic = document.getElementById('big_pic');
-        let small_pics = document.getElementsByClassName('small_pic');
-        for(let i = 0; i < small_pics.length; i++){
-            small_pics[i].addEventListener('click',function(){
-                big_pic.src = small_pics[i].src;
-            })
-        }
-    </script> -->
-{%endblock%}
+
 

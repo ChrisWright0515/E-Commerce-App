@@ -5,10 +5,10 @@ let view_complaints_btn = document.querySelectorAll('.view_complaints_btn')
 let stars = document.querySelectorAll('.star')
 let filter_stars = document.querySelectorAll('.filter_star')
 let chatWrapper = document.querySelectorAll('.chat_messages');
+let show_sign_in_btn = document.querySelectorAll('show_sign_in')
 chatWrapper.forEach(chat => {
     x = chat.scrollHeight;
     chat.scrollTo(0, x + 50)
-    console.log(chat.scrollHeight)
 });
 
 function addSticky(){
@@ -35,29 +35,24 @@ $('#sign_in').on('click', () => {
     $('#login_form').slideToggle(500);
 });
 
-$(".view_complaints_btn").on('click', () => {
-    show_complaints = $(this).nextElementSibling
-    console.log(show_complaints)
+$('.show_sign_in').on('click', () => {
+    $('#login_form').slideToggle(500);
 });
+
+
 $("#add_chat").on('click', () => {
     chat = document.getElementById('add_chat')
     form = chat.nextElementSibling
-    console.log(form)
-    console.log(parent)
     form.style.display = 'flex'
     $(chat).slideUp(500)
 });
 
 function change_pic(){
-    console.log(this.src)
     url = this.src
     big_src = big_pic.src
     big_pic.src = url
     this.src = big_src
 
-}
-function get_options(){
-    console.log(this.value)
 }
 
 function get_stars(){
@@ -92,7 +87,6 @@ function get_filter_stars(){
 };
 function fill_stars(){
     radio = this.previousElementSibling
-    console.log(radio.value)
     for (let i = 0; i < filter_stars.length; i++) {
         filter_stars[i].name = "star-outline"
     }
@@ -122,7 +116,6 @@ view_complaints_btn.forEach(button => {
     button.addEventListener('click', () => {
         let icon = button.firstElementChild
         show_complaints = button.nextElementSibling
-        console.log(show_complaints)
         if (show_complaints.style.display == 'none'){
             $(show_complaints).slideDown(500)
             icon.style.transform = 'rotate(180deg)'

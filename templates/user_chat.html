@@ -1,35 +1,6 @@
 {%extends 'base.html'%}
 {%block title%} Wright Store | Orders {%endblock%}
 {%block body%}
-  <section class="center">
-      <div class="profile_card">
-          <div class="profile_container">
-          </div>
-          {%block prof_info%}
-              <div class="name_container">
-                    {%if user_info[2] != None%}
-                        <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
-                    {%else%}
-                        <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
-                    {%endif%}
-                    <div class="underline"></div>
-                    <div class="contact">
-                        <div class="contact_label_cont flex_cont">
-                            <p class="contact_label">Phone Number:</p>
-                            <p class="contact_info">{{phone}}</p>
-                        </div>
-                        <div class="underline"></div>
-                        <div class="contact_label_cont flex_cont">
-                            <p class="contact_label">Email:</p>
-                            <p class="contact_info">{{user_info[4]}}</p>
-                        </div>
-                        <div class="underline"></div>
-                    </div>
-              </div>
-          {%endblock%}
-      </div>
-  </section>
-  <div class="page_underline"></div>
     <div class="title">
         <h2 class="header">Chat</h2>
     </div>
@@ -73,7 +44,7 @@
                             {%else%}
                                 <div class="chat_bubble_receiver">
                                     {%if message[1][:4] == 'http'%}
-                                        <p style="background: transparent;box-shadow: 0 0 0px;" class="chat_text"><img style="width:100px; " src="{{message[1]}}" alt="" srcset=""><span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
+                                        <p style="background: transparent;box-shadow: 0 0 0px;" class="chat_text"><img style="width:100px; " src="{{message[1]}}" alt="{{message[1]}}" srcset=""><span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
                                     {%else%}
                                         <p class="chat_text">{{message[1]}} <span>{{message[3]}} to {{message[5]}} {{message[6]}}</span></p>
                                     {%endif%}
@@ -91,5 +62,33 @@
                 </form>
             </div>
         {%endfor%}
+    </section>
+    <div class="page_underline"></div>
+
+    <section class="center">
+        <div class="profile_card">
+            {%block prof_info%}
+                <div class="name_container">
+                      {%if user_info[2] != None%}
+                          <h2 class="vendor_name card_title">{{user_info[1] | title}} {{user_info[2] | title}}</h2>
+                      {%else%}
+                          <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                      {%endif%}
+                      <div class="underline"></div>
+                      <div class="contact">
+                          <div class="contact_label_cont flex_cont">
+                              <p class="contact_label">Phone Number:</p>
+                              <p class="contact_info">{{phone}}</p>
+                          </div>
+                          <div class="underline"></div>
+                          <div class="contact_label_cont flex_cont">
+                              <p class="contact_label">Email:</p>
+                              <p class="contact_info">{{user_info[4]}}</p>
+                          </div>
+                          <div class="underline"></div>
+                      </div>
+                </div>
+            {%endblock%}
+        </div>
     </section>
 {%endblock%}

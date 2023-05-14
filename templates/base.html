@@ -93,10 +93,12 @@
                 </div>
             </div>
             {%if current_user%}
-                <a href="{{url_for('show_user_page')}}" style="width:15%" class="cart_dropdown">
+                <a href="{{url_for('show_cart')}}" style="width:15%" class="cart_dropdown">
                     <span style="font-size: 30px;"><ion-icon name="cart-outline"></ion-icon></span>
                     {%if cart%}
-                        <span class="cart_badge">{{cart[0][0]}}</span>
+                        {%if cart[0][0] > 0%}
+                            <span class="cart_badge">{{cart[0][0]}}</span>
+                        {%endif%}
                     {%endif%}
                 </a>
             {%endif%}
@@ -155,7 +157,7 @@
             </div>
             <div class="wrap_cont">
                 {% for item in newest_products%}
-                        <div class=" hero_card display_product_card">
+                        <div class=" hero_card">
                             {% if item[-1] != None %}
                                 <a href="{{url_for('show_product',config_id=item[0])}}"><img src="{{item[-1]}}" alt="{{item[2]| title}}" srcset=""></a>
                             {%else%}

@@ -61,12 +61,13 @@
             <button type="submit" value="" id="search_btn"><ion-icon name="search-outline"></ion-icon></button>
         </form>
     </header>
-    <p id="user_type"style="display:none;">{{user_info[7]}}</p>
-    <div class="title">
-          <h2 class="header">Account</h2>
-    </div>
-        <div class="center">
 
+    <p id="user_type"style="display:none;">{{user_info[7]}}</p>
+    {%block prof_info%}
+        <div class="title">
+            <h2 class="header">Account</h2>
+        </div>
+        <div class="center">
             <div class="profile_card">
                 {% if add_logo_message %}
                     <p>{{add_logo_message}}</p>
@@ -83,69 +84,72 @@
                         {%endblock%}
                     </div>
                 {%endif%}
-                {%block prof_info%}
-                    <div class="name_container">
-                        <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                <div class="name_container">
+                    <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                    <div class="underline"></div>
+                    <div class="contact">
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Phone Number:</p>
+                            <p class="contact_label contact_info">{{phone}}</p>
+                        </div>
                         <div class="underline"></div>
-                        <div class="contact">
-                            <div class="contact_label_cont flex_cont">
-                                <p class="contact_label">Phone Number:</p>
-                                <p>{{phone}}</p>
-                            </div>
-                            <div class="underline"></div>
-                            <div class="contact_label_cont flex_cont">
-
-                                <p class="contact_label">Email:</p>
-                                <p>{{user_info[4]}}</p>
-                            </div>
-                            <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Email:</p>
+                            <p class="contact_label contact_info">{{user_info[4] | title}}</p>
                         </div>
-
-                        <div class="details_container">
-                            {%if product_count | length > 0%}
-                                <div class="consoles_container count_container">
-                                  <h4>{{product_count[0][0]}}</h4>
-                                  <p>{{product_count[0][1]}}</p>
-                                </div>
-                            {%endif%}
-
-                            {%if product_count | length > 2%}
-                                <div class="games_container count_container">
-                                  <h4>{{product_count[2][0]}}</h4>
-                                  <p>{{product_count[2][1]}}</p>
-                                </div>
-                            {%endif%}
-
-                            {%if product_count | length > 1%}
-                                <div class="acc_container count_container">
-                                  <h4>{{product_count[1][0]}}</h4>
-                                  <p>{{product_count[1][1]}}</p>
-                                </div>
-                            {%endif%}
+                        <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Username:</p>
+                            <p class="contact_label contact_info">{{user_info[5] | title}}</p>
                         </div>
-                        {%if admin%}
-                            <div class="details_container">
+                        <div class="underline"></div>
+                    </div>
 
-                                <div class="consoles_container count_container">
-                                  <h4>{{user_count[1][0]}}</h4>
-                                  <p>Customers</p>
-                                </div>
+                    <div class="details_container">
+                        {%if product_count | length > 0%}
+                            <div class="consoles_container count_container">
+                                <h4>{{product_count[0][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[0][1]}}</p>
+                            </div>
+                        {%endif%}
 
-                                <div class="games_container count_container">
-                                  <h4>{{user_count[2][0]}}</h4>
-                                  <p>Vendors</p>
-                                </div>
+                        {%if product_count | length > 2%}
+                            <div class="games_container count_container">
+                                <h4>{{product_count[2][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[2][1]}}</p>
+                            </div>
+                        {%endif%}
 
-                                <div class="acc_container count_container">
-                                  <h4>{{product_count[0][0]}}</h4>
-                                  <p>Admin</p>
-                                </div>
+                        {%if product_count | length > 1%}
+                            <div class="acc_container count_container">
+                                <h4>{{product_count[1][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[1][1]}}</p>
                             </div>
                         {%endif%}
                     </div>
-                {%endblock%}
+                    {%if admin%}
+                        <div class="details_container">
+
+                            <div class="consoles_container count_container">
+                                <h4>{{user_count[1][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[1][1]}}</p>
+                            </div>
+
+                            <div class="games_container count_container">
+                                <h4>{{user_count[2][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[2][1]}}</p>
+                            </div>
+
+                            <div class="acc_container count_container">
+                                <h4>{{user_count[0][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[0][1]}}</p>
+                            </div>
+                        </div>
+                    {%endif%}
+                </div>
             </div>
         </div>
+    {%endblock%}
     {%block body%}
         <div class="title">
           <h2 class="header">Products</h2>
@@ -193,7 +197,9 @@
                 <p class="error_message">{{disc_message}}</p>
             {%endif%}
         {%endif%}
-
+        {%if delete_prod_message%}
+            <p class="good_message">{{delete_prod_message}}</p>
+        {%endif%}
         <section class="product_container add_product_container">
             <div class="product_card add_product">
                 {%if create_message%}
@@ -251,7 +257,13 @@
             {%for product in all_products%}
                 <div class="product_card">
                     <div class="product_main">
-                        <a href="" class="product_delete"><ion-icon name="trash-outline"></ion-icon><span>Delete Product</span></a>
+                        <div class="product_delete">
+                            <span>Delete Product</span>
+                            <ion-icon class="delete_product" name="trash-outline"></ion-icon>
+                            <form style="display: none;"method="post" action="{{url_for('delete_product',user_type=user_info[7],prod_no=product[0])}}">
+                                <input type="submit" value="Delete Product">
+                            </form>
+                        </div>
                         <form action="{{url_for('add_prod_images',user_type=user_info[7],prod_no=product[0])}}"method="post" class="product_setting add_images">
                             <ion-icon name="images-outline"></ion-icon>
                             <span>Add Images</span>
@@ -369,14 +381,18 @@
                                 <form method="post" action="{{url_for('add_variation_picture',user_type=user_info[7],config_id=detail[0])}}" >
                                     {%if detail[-1] == None or detail[-1] == ''%}
                                         <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
+                                        
                                     {%else%}
                                     <div class="flex_cont var_img_cont">
                                         <p class="variation_img"style="background-image:url({{detail[-1]}})" ></p>
                                         <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
                                     </div>
                                     {%endif%}
-
+                                    
                                 </form>
+                                <div style="position: relative;">
+                                    <a href="{{url_for('delete_product_variation',user_type=user_info[7],config_id=detail[0])}}" class="delete_var"><ion-icon class="delete_product" name="trash-outline"></ion-icon><span>Delete Variation</span></a>
+                                </div>
                                 <div class="underline"></div>
                             {%endif%}
                         {%endfor%}

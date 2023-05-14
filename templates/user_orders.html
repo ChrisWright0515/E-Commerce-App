@@ -1,7 +1,7 @@
 {%extends 'base.html'%}
 {%block title%} Wright Store | Orders {%endblock%}
 {%block body%}
-  <section class="center">
+  <!-- <section class="center">
       <div class="profile_card">
           <div class="profile_container">
           </div>
@@ -24,14 +24,14 @@
                 </div>
           {%endblock%}
       </div>
-  </section>
-  <div class="page_underline"></div>
+  </section> -->
+  <!-- <div class="page_underline"></div> -->
     <div class="title">
         <h2 class="header">Orders</h2>
     </div>
     <section class="orders_card_container center">
         {%if complaint_message%}
-            {% if complaint_message == 'Complaint registered successfully'%}
+            {% if complaint_message == 'Complaint registered successfully' or complaint_message == 'Order cancelled'%}
                 <p style="color:green;font-size:42px;">{{complaint_message}}</p>
             {%else%}
                 <p style="color:red;font-size:42px;">{{complaint_message}}</p>
@@ -78,6 +78,7 @@
                 <div class="next_to">
                     {%if order[-1] == 'Pending'%}
                     <p class="order_main" >Status: <b style="color: red;font-style: italic;">{{order[-1]}}</b></p>
+                    <a href="{{url_for('cancel_order',order_no=order[0])}}"class="btn">Cancel Order</a>
                     {%else%}
                         <p class="order_main" >Status: <b style="color: green;">{{order[-1]}}</b></p>
                     {%endif%}

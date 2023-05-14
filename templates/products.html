@@ -3,38 +3,44 @@
 {%block body%}
     <div>
         <div class="filter_cont">
-            <!-- <div class="filter"> -->
-                <h1 class="filter_label">Filter By:</h1>
-                <form action="{{url_for('show_category_products')}}"method="get"class="filter_form">
-                    <label for="category" class="filter_label">Category:</label>
-                    <select onchange="this.form.submit()" name="category" id="">
-                        <option hidden="hidden" value="">Select Category</option>
-                        <option value="Console">Consoles</option>
-                        <option value="Game">Games</a></option>
-                        <option value="Accessory">Accessories</option>
-                    </select>
-                </form>
-                <form action="{{url_for('show_color_products')}}" method="get"class="filter_form">
-                    <label for="color" class="filter_label">Colors:</label>
-                    <select onchange="this.form.submit()" name="color" id="">
-                        <option hidden="hidden" value="">Select Color</option>
-                        <option value="">None</option>
-                        {%for color in colors%}
-                            <option value="{{color[0]}}">{{color[0]| title}}</option>
-                        {%endfor%}
-                    </select>
-                </form>
-                <form action="{{url_for('show_size_products')}}" method="get"class="filter_form">
-                    <label for="brand" class="filter_label">Sizes:</label>
-                    <select onchange="this.form.submit()" name="size" id="">
-                        <option hidden="hidden" value="">Select Size</option>
-                        <option value="">None</option>
-                        {%for size in sizes%}
-                            <option value="{{size[0]}}">{{size[0]| title}}</option>
-                        {%endfor%}
-                    </select>
-                </form>
-            <!-- </div>  -->
+            <h1 class="filter_label">Filter By:</h1>
+            <form action="{{url_for('show_category_products')}}"method="get"class="filter_form">
+                <label for="category" class="filter_label">Category:</label>
+                <select onchange="this.form.submit()" name="category" id="">
+                    <option hidden="hidden" value="">Select Category</option>
+                    <option value="Console">Consoles</option>
+                    <option value="Game">Games</a></option>
+                    <option value="Accessory">Accessories</option>
+                </select>
+            </form>
+            <form action="{{url_for('show_color_products')}}" method="get"class="filter_form">
+                <label for="color" class="filter_label">Colors:</label>
+                <select onchange="this.form.submit()" name="color" id="">
+                    <option hidden="hidden" value="">Select Color</option>
+                    <option value="">None</option>
+                    {%for color in colors%}
+                        <option value="{{color[0]}}">{{color[0]| title}}</option>
+                    {%endfor%}
+                </select>
+            </form>
+            <form action="{{url_for('show_size_products')}}" method="get"class="filter_form">
+                <label for="brand" class="filter_label">Sizes:</label>
+                <select onchange="this.form.submit()" name="size" id="">
+                    <option hidden="hidden" value="">Select Size</option>
+                    <option value="">None</option>
+                    {%for size in sizes%}
+                        <option value="{{size[0]}}">{{size[0]| title}}</option>
+                    {%endfor%}
+                </select>
+            </form>
+            <form action="{{url_for('show_available_products')}}" method="get"class="filter_form">
+                <label for="available" class="filter_label">Available:</label>
+                <select onchange="this.form.submit()" name="available" id="">
+                    <option hidden="hidden" value="">Select Availability</option>
+                    <option value="In Stock">In Stock</option>
+                    <option value="Out of Stock">Out of Stock</option>
+                </select>
+            </form>
         </div>
         <div class="display_product_cont">
             {%if products | length > 0%}

@@ -1,6 +1,4 @@
-//$('.product_edit').on('click', () => {
-//    console.log(this.parentNode)
-//});
+
 let edit_buttons = document.querySelectorAll(".product_edit")
 let view_details = document.querySelectorAll(".view_details_btn")
 let add_details = document.querySelectorAll(".add_variation")
@@ -11,6 +9,7 @@ let add_variation_pic = document.querySelectorAll(".add_variation_pic")
 let discount = document.querySelectorAll(".show_disc")
 let disc_type = document.querySelectorAll(".disc_type")
 let add_logo = document.querySelectorAll(".show_logo")
+let delete_product_btn = document.querySelectorAll(".delete_product")
 function edit_product(){
     user_type = document.getElementById('user_type')
     this.style.display = 'none'
@@ -18,7 +17,6 @@ function edit_product(){
     child = card.children
     values = []
     form = child[8].nextElementSibling
-    console.log(form)
     inputs = card.querySelectorAll('.product_input')
     picture = card.querySelectorAll('.img')
     source = picture[0].id
@@ -96,7 +94,6 @@ function edit_variations(){
     price = price_el.textContent
     size = size_el.textContent
     color = color_el.textContent
-    console.log(color,size,price,qty)
     form.innerHTML = `
         <input class="edit_prod_details_input" type="text" name="prod_color"placeholder="Color"value="${color}" id="">
         <input class="edit_prod_details_input" type="text" name="prod_size"placeholder="Size" id=""value="${size}">
@@ -107,12 +104,10 @@ function edit_variations(){
 }
 function show_images_form(){
     form = this.parentNode
-    console.log(form)
     num_pics = $(this).val()
     for(i=0; i < num_pics; i++){
         form.innerHTML += `<input type="text" name="img_url" id="">`
     }
-    console.log(num_pics)
 }
 function add_prod_images(){
     select = this.querySelectorAll('.add_images_select')
@@ -124,7 +119,6 @@ function add_prod_images(){
 //});
 }
 function variation_pic(){
-    console.log(this)
     form = this.parentNode
     form.innerHTML = `
         <input type="text" name="var_img_url" id="">
@@ -134,7 +128,6 @@ function variation_pic(){
 
 function show_discount(){
     const disc_cont = this.nextElementSibling
-    console.log(disc_cont)
     if (disc_cont.style.display == 'none'){
         $(disc_cont).slideDown(500)
         disc_cont.style.display = 'flex'
@@ -145,7 +138,6 @@ function show_discount(){
 }
 function show_disc_dur(){
     parent = this.parentNode
-    console.log(this.value)
     if (this.value == 'TIMED'){
         dur_input = parent.lastElementChild
         dur_input.style.display = 'block'
@@ -157,7 +149,6 @@ function show_disc_dur(){
 }
 function show_logo(){
     const logo_cont = this.nextElementSibling
-    console.log(logo_cont)
     if (logo_cont.style.display == 'none'){
         $(logo_cont).slideDown(500)
         logo_cont.style.display = 'flex'
@@ -167,6 +158,17 @@ function show_logo(){
     }
 
 };
+function show_delete_btn(){
+    span = this.previousElementSibling
+    form = this.nextElementSibling
+    if (form.style.display == 'none'){
+        $(form).slideToggle(500)
+        $(span).hide()
+    }else{
+        $(form).slideUp(500)
+        $(span).show()
+    }
+};
 $('#add_product').on('click', () => {
     $('#add_product').hide()
     $('.create_prod_message').hide()
@@ -175,7 +177,9 @@ $('#add_product').on('click', () => {
 
 });
 
-
+delete_product_btn.forEach(button => {
+    button.addEventListener('click', show_delete_btn)
+});
 edit_buttons.forEach(button => {
     button.addEventListener('click', edit_product)
 });

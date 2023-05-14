@@ -1,8 +1,9 @@
 {%extends 'account.html'%}
 {%block title%}Wright Store | Orders {%endblock%}
+{%block prof_info%}{%endblock%}
 {%block body%}
     {%if order_message%}
-        {%if order_message == 'Order Confirmed' or order_message == 'Complaint Approved' or order_message == 'Complaint Rejected'%}
+        {%if order_message == 'Order Confirmed' or order_message == 'Complaint Approved' or order_message == 'Complaint Rejected' or order_message == 'Product Confirmed'%}
             <p style="color:green; font-size:42px;">{{order_message}}</p>
         {%else%}
             <p style="color:red; font-size:42px;">{{order_message}}</p>
