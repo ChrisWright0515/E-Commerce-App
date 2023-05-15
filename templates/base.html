@@ -70,6 +70,8 @@
                         {%if admin%}
                             <a href="{{url_for('show_account_page',user_type='ADM')}}">Admin Account</a>
                             <div class="underline"></div>
+                            <a href="{{url_for('show_products',user_type='ADM')}}">Vendor Products</a>
+                            <div class="underline"></div>
                             <a href="{{url_for('show_admin_orders',user_type='ADM')}}">Orders</a>
                             <div class="underline"></div>
                             <a href="{{url_for('show_accounts',user_type='ADM')}}">Accounts</a>
@@ -79,6 +81,8 @@
                         {%endif%}
                         {%if current_ven%}
                             <a href="{{url_for('show_account_page',user_type='VEN')}}">Vendor Account</a>
+                            <div class="underline"></div>
+                            <a href="{{url_for('show_products',user_type= 'VEN')}}">My Products</a>
                             <div class="underline"></div>
                             <a href="{{url_for('show_admin_orders',user_type= 'VEN')}}">Orders</a>
                             <div class="underline"></div>

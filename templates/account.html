@@ -31,6 +31,8 @@
                     {%if admin%}
                         <a href="{{url_for('show_account_page',user_type=user_info[7])}}">Admin Account</a>
                         <div class="underline"></div>
+                        <a href="{{url_for('show_products',user_type=user_info[7])}}">Vendor Products</a>
+                        <div class="underline"></div>
                         <a href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
                         <div class="underline"></div>
                         <a href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
@@ -40,6 +42,8 @@
                     {%endif%}
                     {%if current_ven%}
                         <a href="{{url_for('show_account_page',user_type=user_info[7])}}">Vendor Account</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_products',user_type=user_info[7])}}">My Products</a>
                         <div class="underline"></div>
                         <a href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
                         <div class="underline"></div>
@@ -67,7 +71,7 @@
         <div class="title">
             <h2 class="header">Account</h2>
         </div>
-        <div class="center">
+        <section class="center">
             <div class="profile_card">
                 {% if add_logo_message %}
                     <p>{{add_logo_message}}</p>
@@ -148,10 +152,10 @@
                     {%endif%}
                 </div>
             </div>
-        </div>
+        </section>
     {%endblock%}
     {%block body%}
-        <div class="title">
+        <!-- <div class="title">
           <h2 class="header">Products</h2>
         </div>
         {%if edit_message%}
@@ -278,7 +282,6 @@
                         </form>
                         <p class="product_setting product_edit"><ion-icon name="settings-outline"></ion-icon><span class="product_setting product_add">Edit Product</span></p>
                         <p class="product_setting product_add"></p>
-<!--                        {%if inventory | length > 1%}-->
                             {%if product[0] not in inventory[0]%}
                                 <p class="inventory">In stock: 0</p>
                             {%else%}
@@ -288,7 +291,6 @@
                                     {%endif%}
                                 {%endfor%}
                             {%endif%}
-<!--                        {%endif%}-->
                         <div id="{{product[4]}}" class="img" style="background-image: url({{product[4]}});"></div>
 
                         <div class="underline"></div>
@@ -401,7 +403,7 @@
                     </div>
                 </div>
             {%endfor%}
-        </section>
+        </section> -->
     {%endblock%}
 
 

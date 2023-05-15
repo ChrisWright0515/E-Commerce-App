@@ -16,7 +16,8 @@ function edit_product(){
     let card = this.parentNode;
     child = card.children
     values = []
-    form = child[8].nextElementSibling
+    form_el = card.querySelectorAll('.edit_products_form')
+    form = form_el[0]
     inputs = card.querySelectorAll('.product_input')
     picture = card.querySelectorAll('.img')
     source = picture[0].id
@@ -29,6 +30,8 @@ function edit_product(){
             <p>Image URL:</p>
             <input class = "product_form_input" type="text" name="prod_img_url" value="${source}" id="">
         </div>
+        
+        <div class="underline"></div>
 
         <div class="next_to">
             <p>Product Name:</p>

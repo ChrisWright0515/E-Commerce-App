@@ -176,6 +176,9 @@ header{
   padding: 12px 16px;
   z-index: 3;
 }
+.dropdown-content .underline{
+    margin: .1rem auto;
+}
 form.dropdown-content{
     min-width:max-content;
 }
@@ -249,7 +252,6 @@ form.dropdown-content div{
     font-size: 18px;
 }
 #search_btn ion-icon{
-    font-size: 20px;
 }
 .head_input{
     border: none;
@@ -434,7 +436,7 @@ form.dropdown-content div{
 }
 /*Register form*/
 .arrow_btn{
-    font-size: 24px;
+    font-size: 200%;
     cursor:pointer;
 }
 .card_title{
@@ -701,7 +703,7 @@ input[type=submit]:not(.head_submit):hover{
     position:absolute;
     top:10px;
     right:20px;
-    font-size:20px;
+    font-size:150%;
     background:linear-gradient(to right,rgb(0, 0, 0),#FD0000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -709,9 +711,12 @@ input[type=submit]:not(.head_submit):hover{
 #add_product{
     cursor:pointer;
     width: fit-content;
-    height: 240px;
+    height: fit-content;
     margin: 0 auto;
     position: relative;
+}
+#add_product ion-icon{
+    font-size: 100%;
 }
 #add_product:hover{
     color:#FD0000;
@@ -795,7 +800,7 @@ input[type=submit]:not(.head_submit):hover{
     display: block;
 }
 .product_setting ion-icon{
-    font-size:24px;
+    font-size:200%;
 }
 .product_edit{
     position: absolute;
@@ -988,7 +993,7 @@ input[type=submit]:not(.head_submit):hover{
     display:flex;
 }
 .disc_icon ion-icon{
-    font-size: 24px;
+    font-size: 200%;
 }
 .delete_var{
     position: absolute;
@@ -1786,8 +1791,8 @@ input[type="radio"]{
     }
 }
 @media only screen and (max-width: 750px) {
-    .product_card{
-        width: fit-content;
+    div.product_card{
+        width: 95%;
     }
 }
 @media only screen and (min-width: 2000px){
@@ -1796,5 +1801,9 @@ input[type="radio"]{
     }
     ion-icon{
         font-size: 1.5rem;
+    }
+    div.product_card div.img{
+        width: 600px;
+        height: 600px;
     }
 }

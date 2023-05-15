@@ -1,0 +1,256 @@
+{%extends 'account.html'%}
+{%block title%}Wright Store | Orders {%endblock%}
+{%block prof_info%}{%endblock%}
+{%block body%}
+    <div class="title">
+        <h2 class="header">Products</h2>
+    </div>
+    {%if edit_message%}
+        {%if edit_message == 'Product Edited.'%}
+            <p class="good_message" >{{edit_message}}</p>
+        {%else%}
+            <p class="error_message">{{edit_message}}</p>
+        {%endif%}
+    {%endif%}
+
+    {%if add_var_message%}
+        {%if add_var_message == 'Variation Added'%}
+            <p class="good_message">{{add_var_message}}</p>
+        {%else%}
+            <p class="error_message">{{add_var_message}}</p>
+        {%endif%}
+    {%endif%}
+
+    {%if edit_prod_variation%}
+        {%if edit_prod_variation == 'Product Edited'%}
+            <p class="good_message">{{edit_prod_variation}}</p>
+        {%else%}
+            <p class="error_message">{{edit_prod_variation}}</p>
+        {%endif%}
+    {%endif%}
+
+    {%if add_pic_message%}
+        {%if add_pic_message == 'Picture Added'%}
+            <p class="good_message">{{add_pic_message}}</p>
+        {%else%}
+            <p class="error_message">{{add_pic_message}}</p>
+        {%endif%}
+    {%endif%}
+
+    {%if add_variation_pic%}
+        <p class="good_message">{{add_variation_pic}}</p>
+    {%endif%}
+
+    {%if disc_message%}
+        {%if disc_message == 'Discount Added' or disc_message == 'Discount Deleted'%}
+            <p class="good_message">{{disc_message}}</p>
+        {%else%}
+            <p class="error_message">{{disc_message}}</p>
+        {%endif%}
+    {%endif%}
+    {%if delete_prod_message%}
+        <p class="good_message">{{delete_prod_message}}</p>
+    {%endif%}
+    <section class="product_container add_product_container">
+        <div class="product_card add_product">
+            {%if create_message%}
+                {%if create_message == 'Product Added'%}
+                    <p class="create_prod_message" style="font-size:10%; color:green;">{{create_message}}</p>
+                {%else%}
+                    <p class="create_prod_message" style="font-size:10%; color:red;">{{create_message}}</p>
+                {%endif%}
+            {%endif%}
+            <p id="add_product" class="animate__animated"><ion-icon name="add-circle-outline"></ion-icon><span style="position: absolute;">Add Product</span></p>
+            <form id="add_product_form"class="animate__animated" style="display:none; width:100%;" action="{{url_for('create_product',user_type=user_info[7])}}" method="post">
+                <div class="next_to">
+                    <p>Image URL:</p>
+                    <input class = "product_form_input" type="text" name="prod_img_url"placeholder="Enter Image URL" value="" id="">
+                </div>
+
+                <div class="next_to">
+                    <p>Product Name:</p>
+                    <input class = "product_form_input" type="text" name="prod_name"placeholder="Enter Product Name" value="" id="">
+                </div>
+
+                    <div class="underline"></div>
+
+                    <div class="next_to">
+                        <p>Description:</p>
+                        <input class = "product_form_input" type="text" name="prod_descr"placeholder="Enter Product Description" value="" id="">
+                    </div>
+
+
+                    {%if admin%}
+                        <div class="underline"></div>
+                        <div class="next_to">
+                            <p>Vendor ID:</p>
+                            <input class = "product_form_input" type="text" name="vend_id"placeholder="Enter Vendor ID" value="" id="">
+                        </div>
+                    {%endif%}
+
+                    <div class="underline"></div>
+
+                    <div class="next_to">
+                        <p>Product Category:</p>
+                        <select name="prod_category">
+                            <option value="Game">Game</option>
+                            <option value="Console">Console</option>
+                            <option value="Accessory">Accessory</option>
+                        </select>
+                    </div>
+                    <div class="col_cont">
+                        <input style="margin:.5rem auto;" type="submit" value="Create Product">
+                        <a href="{{url_for('show_products',user_type=user_info[7])}}">Cancel</a>
+                    </div>
+            </form>
+        </div>
+
+        {%for product in all_products%}
+            <div class="product_card">
+                <div class="product_main">
+                    <div class="product_delete">
+                        <span>Delete Product</span>
+                        <ion-icon class="delete_product" name="trash-outline"></ion-icon>
+                        <form style="display: none;"method="post" action="{{url_for('delete_product',user_type=user_info[7],prod_no=product[0])}}">
+                            <input type="submit" value="Delete Product">
+                        </form>
+                    </div>
+                    <form action="{{url_for('add_prod_images',user_type=user_info[7],prod_no=product[0])}}"method="post" class="product_setting add_images">
+                        <ion-icon name="images-outline"></ion-icon>
+                        <span>Add Images</span>
+                        <select style="display:none;" class="add_images_select">
+                            <option hidden="hidden">Select Number of Pictures</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <input type="submit" class="add_images_submit"  value="Add">
+                    </form>
+                    <p class="product_setting product_edit"><ion-icon name="settings-outline"></ion-icon><span class="product_setting product_add">Edit Product</span></p>
+                    <p class="product_setting product_add"></p>
+    <!--                        {%if inventory | length > 1%}-->
+                        {%if product[0] not in inventory[0]%}
+                            <p class="inventory">In stock: 0</p>
+                        {%else%}
+                            {%for i in range(inventory[0] | length)%}
+                                {%if product[0] == inventory[0][i]%}
+                                    <p class="inventory">In stock: {{inventory[1][i]}}</p>
+                                {%endif%}
+                            {%endfor%}
+                        {%endif%}
+    <!--                        {%endif%}-->
+                    <div id="{{product[4]}}" class="img" style="background-image: url({{product[4]}});"></div>
+
+                    <div class="underline"></div>
+
+                    <div class="next_to">
+                        <p>Product Number:</p>
+                        <p class="product_input">{{product[0]}}</p>
+                    </div>
+                    <div class="underline"></div>
+
+                    {%if admin%}
+
+                        <div class="next_to">
+                            <p>Vendor ID:</p>
+                            <p class="">{{product[5] | upper}}</p>
+                        </div>
+
+                        <div class="underline"></div>
+                    {%endif%}
+
+                    <form style="width:100%;text-align:center;" action="{{url_for('edit_product',user_type=user_info[7],prod_no=product[0])}}" method="post" class="edit_products_form">
+                        <div class="next_to">
+                            <p>Product Name:</p>
+                            <p class="product_input">{{product[1] | title}}</p>
+                        </div>
+
+                        <div class="underline"></div>
+
+                        <div class="next_to">
+                            <p>Description:</p>
+                            <p class="product_input">{{product[2] | title}}</p>
+                        </div>
+
+                        <div class="underline"></div>
+
+                        <div class="next_to">
+                            <p>Product Category:</p>
+                            <p class="product_input">{{product[3]}}</p>
+                        </div>
+
+                    </form>
+
+                    <div class="underline"></div>
+
+                    <p class="view_details_btn"style="width:fit-content;margin:0 auto;position:relative;"><ion-icon class="arrow_btn"  name="chevron-down-outline"></ion-icon><span style="position:absolute;">View Details</span></p>
+                </div>
+                <div style="display:none;" class="vendor_product_details animate__animated">
+                    <form style="margin:1rem auto;" action="{{url_for('add_discount',user_type=user_info[7],prod_no=product[0])}}" method="post">
+                        <p class="disc_icon show_disc" style="position:relative;"><ion-icon class="disc_ion" name="pricetags-outline"></ion-icon><span>Add Discount</span></p>
+                        <div class="discount_cont"style="display:none;flex-direction:column;align-items:center;">
+                            <input type="submit" value="Add">
+                            <select  class="disc_type"name="disc_type">
+                                <option hidden="hidden">Discount Type</option>
+                                <option value="TIMED">Timed</option>
+                                <option value="UNTIMED">Untimed</option>
+                            </select>
+                            <input type="number" name="disc_amt"maxlength="99"minlength="1"placeholder="Discount Amount" id="">
+                            <input style="display:none;" type="number"placeholder="Discount Duration(Days)" name="disc_dur" id="">
+                        </div>
+                    </form>
+                    
+                    {% if product[6] != None%}
+                        <div class="flex_cont">
+                            <p>Discount: {{ (product[6] * 100) | round | int}}% Off</p>
+                            {%if product[7] != None%}
+                                <p>Ends in {{product[7]}} days</p>
+                            {%endif%}
+                            <a href="{{url_for('delete_discount',user_type=user_info[7],prod_no=product[0])}}"class="btn">Delete Discount</a>
+                        </div>
+                        <div style="margin: 0.5rem auto;" class="underline"></div>
+                    {%endif%}
+                    
+                    <div class="configurations">
+                        <p>Color</p>
+                        <p>Size</p>
+                        <p>Price</p>
+                        <p>Quantity</p>
+                        <p>Edit</p>
+                    </div>
+                    {%for detail in product_details%}
+                        {%if detail[1] == product[0]%}
+                            <form method="post" action="{{url_for('edit_variations',user_type=user_info[7],config_id=detail[0],prod_no=detail[1])}}" class="config_details">
+                                <p>{{detail[2] | title}}</p>
+                                <p>{{detail[3]}}</p>
+                                <p>${{ '{:,.2f}'.format(detail[4]) }}</p>
+                                <p>{{detail[5]}}</p>
+                                <p class="edit_prod_details"><ion-icon name="settings-outline"></ion-icon></p>
+
+                            </form>
+                            <form method="post" action="{{url_for('add_variation_picture',user_type=user_info[7],config_id=detail[0])}}" >
+                                {%if detail[-1] == None or detail[-1] == ''%}
+                                    <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
+                                    
+                                {%else%}
+                                <div class="flex_cont var_img_cont">
+                                    <p class="variation_img"style="background-image:url({{detail[-1]}})" ></p>
+                                    <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
+                                </div>
+                                {%endif%}
+                                
+                            </form>
+                            <div style="position: relative;">
+                                <a href="{{url_for('delete_product_variation',user_type=user_info[7],config_id=detail[0])}}" class="delete_var"><ion-icon class="delete_product" name="trash-outline"></ion-icon><span>Delete Variation</span></a>
+                            </div>
+                            <div class="underline"></div>
+                        {%endif%}
+                    {%endfor%}
+                    <form action="{{url_for('add_product_detail',user_type=user_info[7],prod_no=product[0])}}"class="last_row_details" style="display:flex;justify-content:space-between;margin-bottom:3rem;" method="post"></form>
+                    <p class="add_variation"><ion-icon name="add-circle-outline"></ion-icon><span>Add Product Variartion</span></p>
+                </div>
+            </div>
+        {%endfor%}
+    </section>
+{%endblock%}

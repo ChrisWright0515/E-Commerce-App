@@ -306,40 +306,7 @@ def login():
 
 @app.route('/account/<user_type>')
 def show_account_page(user_type):
-    
     if 'current_ven' in session:
-        if 'delete_prod_message' in session:    
-            delete_prod_message = session.pop('delete_prod_message')
-        else:
-            delete_prod_message = False
-        if 'edit_prod_message' in session:
-            edit_message = session.pop('edit_prod_message')
-        else:
-            edit_message = False
-        if 'create_prod_message' in session:
-            create_message = session.pop('create_prod_message')
-        else:
-            create_message = False
-        if 'add_var_message' in session:
-            add_var_message = session.pop('add_var_message')
-        else:
-            add_var_message = False
-        if 'edit_prod_variation' in session:
-            edit_prod_variation = session.pop('edit_prod_variation')
-        else:
-            edit_prod_variation = False
-        if 'add_pic_message' in session:
-            add_pic_message = session.pop('add_pic_message')
-        else:
-            add_pic_message = False
-        if 'add_variation_pic' in session:
-            add_variation_pic = session.pop('add_variation_pic')
-        else:
-            add_variation_pic = False
-        if 'disc_message' in session:
-            disc_message = session.pop('disc_message')
-        else:
-            disc_message = False
         if 'add_logo_message' in session:
             add_logo_message = session.pop('add_logo_message')
         else:
@@ -347,14 +314,74 @@ def show_account_page(user_type):
         current_user = session['current_ven']
         user_info = conn.execute(
             text(f'select * from users_mast natural join vendors where username = \'{current_user}\'')).all()
-
         phone = phone_format(str(user_info[0][3]))
+        product_count = conn.execute(text(
+            f'select count(config_id),category from product_details natural join product_mast where vendor_id = \'{user_info[0][8]}\' group by category')).all()
+        return render_template('account.html', user_info=user_info[0], phone=phone,product_count=product_count,current_ven=current_user,
+                               add_logo_message=add_logo_message, admin=False)
+    elif 'admin' in session:
+        current_user = session['admin']
+        user_info = conn.execute(
+            text(f'select * from users_mast where username = \'{current_user}\'')).all()
+        product_count = conn.execute(text(
+            f'select count(config_id),category from product_details natural join product_mast group by category')).all()
+        user_count = conn.execute(text(
+            f'select count(user_no),type from users_mast group by type')).all()
+        print(user_count)
+        phone = phone_format(str(user_info[0][3]))
+        return render_template('account.html', user_info=user_info[0], phone=phone,
+                               product_count=product_count, user_count=user_count,
+                               current_ven=False,admin=True)
+    else:
+        return redirect(url_for('show_home'))
+
+
+@app.route('/account/<user_type>_products')
+def show_products(user_type):
+    if 'delete_prod_message' in session:    
+        delete_prod_message = session.pop('delete_prod_message')
+    else:
+        delete_prod_message = False
+    if 'edit_prod_message' in session:
+        edit_message = session.pop('edit_prod_message')
+    else:
+        edit_message = False
+    if 'create_prod_message' in session:
+        create_message = session.pop('create_prod_message')
+    else:
+        create_message = False
+    if 'add_var_message' in session:
+        add_var_message = session.pop('add_var_message')
+    else:
+        add_var_message = False
+    if 'edit_prod_variation' in session:
+        edit_prod_variation = session.pop('edit_prod_variation')
+    else:
+        edit_prod_variation = False
+    if 'add_pic_message' in session:
+        add_pic_message = session.pop('add_pic_message')
+    else:
+        add_pic_message = False
+    if 'add_variation_pic' in session:
+        add_variation_pic = session.pop('add_variation_pic')
+    else:
+        add_variation_pic = False
+    if 'disc_message' in session:
+        disc_message = session.pop('disc_message')
+    else:
+        disc_message = False
+    if 'add_logo_message' in session:
+        add_logo_message = session.pop('add_logo_message')
+    else:
+        add_logo_message = False
+    if 'current_ven' in session:
+        current_user = session['current_ven']
+        user_info = conn.execute(
+            text(f'select * from users_mast natural join vendors where username = \'{current_user}\'')).all()
         all_products = conn.execute(text(
             f'select pm.prod_no,pm.title,pm.description,pm.category,pm.display_pic,pm.vendor_id,d.disc_amt,timestampdiff(day,now(),d.disc_exp) from product_mast pm left join discounts d on (pm.prod_no=d.prod_no) where pm.vendor_id = \'{user_info[0][8]}\' ;')).all()
         product_details = conn.execute(text(
             f'select pd.config_id,pd.prod_no,pd.color,pd.size,round(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no) where pm.vendor_id = \'{user_info[0][8]}\'')).all()
-        product_count = conn.execute(text(
-            f'select count(config_id),category from product_details natural join product_mast where vendor_id = \'{user_info[0][8]}\' group by category')).all()
         all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
         disc_user = put_in_list(all_discounts,0)
         disc_type = put_in_list(all_discounts,1)
@@ -364,46 +391,14 @@ def show_account_page(user_type):
         prod_nums = put_in_list(stock, 1)
         qty = put_in_list(stock, 0)
         inventory = [prod_nums, qty]
-        return render_template('account.html', user_info=user_info[0], phone=phone,
+        return render_template('admin_products.html', user_info=user_info[0],
                                all_products=all_products, product_details=product_details,
-                               product_count=product_count, inventory=inventory, current_ven=current_user,
+                               inventory=inventory, current_ven=current_user,
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
                                disc_message=disc_message,discounts=discounts,add_logo_message=add_logo_message,delete_prod_message=delete_prod_message, admin=False)
     elif 'admin' in session:
-        if 'delete_prod_message' in session:    
-            delete_prod_message = session.pop('delete_prod_message')
-        else:
-            delete_prod_message = False
-        if 'edit_prod_message' in session:
-            edit_message = session.pop('edit_prod_message')
-        else:
-            edit_message = False
-        if 'create_prod_message' in session:
-            create_message = session.pop('create_prod_message')
-        else:
-            create_message = False
-        if 'add_var_message' in session:
-            add_var_message = session.pop('add_var_message')
-        else:
-            add_var_message = False
-        if 'edit_prod_variation' in session:
-            edit_prod_variation = session.pop('edit_prod_variation')
-        else:
-            edit_prod_variation = False
-        if 'add_pic_message' in session:
-            add_pic_message = session.pop('add_pic_message')
-        else:
-            add_pic_message = False
-        if 'add_variation_pic' in session:
-            add_variation_pic = session.pop('add_variation_pic')
-        else:
-            add_variation_pic = False
-        if 'disc_message' in session:
-            disc_message = session.pop('disc_message')
-        else:
-            disc_message = False
         current_user = session['admin']
         user_info = conn.execute(
             text(f'select * from users_mast where username = \'{current_user}\'')).all()
@@ -411,25 +406,17 @@ def show_account_page(user_type):
             f'select pm.prod_no,pm.title,pm.description,pm.category,pm.display_pic,pm.vendor_id,d.disc_amt,timestampdiff(day,now(),d.disc_exp) from product_mast pm left join discounts d on (pm.prod_no=d.prod_no)')).all()
         product_details = conn.execute(text(
             f'select pd.config_id,pd.prod_no,pd.color,pd.size,round(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no);')).all()
-        product_count = conn.execute(text(
-            f'select count(config_id),category from product_details natural join product_mast group by category')).all()
-        user_count = conn.execute(text(
-            f'select count(user_no),type from users_mast group by type')).all()
-        print(user_count)
         all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
         disc_user = put_in_list(all_discounts, 0)
         disc_type = put_in_list(all_discounts, 1)
         disc_exp = put_in_list(all_discounts, 2)
         discounts = [disc_user, disc_type, disc_exp]
-        phone = phone_format(str(user_info[0][3]))
         stock = conn.execute(text(f'select sum(qty),prod_no from product_details group by prod_no;')).all()
         prod_nums = put_in_list(stock, 1)
         qty = put_in_list(stock, 0)
         inventory = [prod_nums, qty]
-        return render_template('account.html', user_info=user_info[0], phone=phone,
-                               all_products=all_products, product_details=product_details,
-                               product_count=product_count, user_count=user_count, inventory=inventory,
-                               current_ven=False,
+        return render_template('admin_products.html', user_info=user_info[0],
+                               all_products=all_products, product_details=product_details,inventory=inventory,current_ven=False,
                                edit_message=edit_message, create_message=create_message,
                                add_var_message=add_var_message, edit_prod_variation=edit_prod_variation,
                                add_pic_message=add_pic_message, add_variation_pic=add_variation_pic,
@@ -575,7 +562,7 @@ def approve_vendor(user_type, user_no):
 @app.route('/account/<user_type>/create')
 def show_vendor_create_page(user_type):
     if 'current_ven' in session:
-        return redirect(url_for('show_account_page', user_type='VEN'))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -601,13 +588,13 @@ def create_product(user_type):
                     f'Insert into product_mast (title,description,added_by,vendor_id,category,display_pic) values (\'{prod_name.lower()}\', \'{prod_descr.lower()}\',\'{user_type}\',\'{vend_id.upper()}\',\'{prod_category}\',\'{url}\')'))
                 conn.commit()
                 session['create_prod_message'] = 'Product Added'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['create_prod_message'] = 'Product already exists'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         else:
             session['create_prod_message'] = 'Please enter all fields'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
 
     elif 'admin' in session:
         vend_id = request.form.get('vend_id')
@@ -621,16 +608,16 @@ def create_product(user_type):
                     conn.execute(text(
                         f'Insert into product_mast (title,description,added_by,vendor_id,category,display_pic) values (\'{prod_name.lower()}\', \'{prod_descr.lower()}\',\'{user_type}\',\'{vend_id.upper()}\',\'{prod_category}\',\'{url}\')'))
                     conn.commit()
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
                 else:
                     session['create_prod_message'] = 'Vendor does not exist'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['create_prod_message'] = 'Product already exists'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         else:
             session['create_prod_message'] = 'Please enter all fields'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -654,17 +641,16 @@ def delete_product(user_type, prod_no):
             conn.execute(text(f'delete from product_mast where prod_no = {prod_no} '))
             conn.commit()
             session['delete_prod_message'] = 'Product Deleted'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
         else:
             return redirect(url_for('show_home'))
     else:
         if 'current_ven' in session or 'admin' in session:
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
         else:
             return redirect(url_for('show_home'))
 
 
-# Delete product variation from product_details table
 @app.route('/account/<user_type>/delete/<config_id>')
 def delete_product_variation(user_type, config_id):
     if 'current_ven' or 'admin' in session:
@@ -675,14 +661,14 @@ def delete_product_variation(user_type, config_id):
         conn.execute(text(f'delete from product_details where config_id = {config_id}'))
         conn.commit()
         session['delete_prod_message'] = 'Product Variation Deleted'
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
 @app.route('/account/<user_type>/edit<prod_no>')
 def show_vendor_edit_page(user_type, prod_no):
     if 'current_ven' in session:
-        return redirect(url_for('show_account_page', user_type='VEN'))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -705,19 +691,19 @@ def edit_product(user_type, prod_no):
                     f'update product_mast set title = \'{name}\', description = \'{description}\',category = \'{category}\',display_pic = \'{display_pic}\' where prod_no = {prod_no} '))
                 conn.commit()
                 session['edit_prod_message'] = 'Product Edited.'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
             else:
                 check_prod = conn.execute(text(
                     f'select prod_no from product_mast where title = \'{name}\' and vendor_id = \'{vend_id[0][0]}\'')).all()
                 if check_prod[0][0] == prod_no:
                     session['edit_prod_message'] = 'Product Edited.'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
                 else:
                     session['edit_prod_message'] = 'Product already exists'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
         else:
             session['edit_prod_message'] = 'Please enter all fields'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
 
     elif 'admin' in session:
         if name != '' and display_pic != '' and description != '' and category != '':
@@ -729,13 +715,13 @@ def edit_product(user_type, prod_no):
                     f'update product_mast set title = \'{name.lower()}\', description = \'{description.lower()}\',category = \'{category}\',display_pic = \'{display_pic}\' where prod_no = {prod_no} '))
                 conn.commit()
                 session['edit_prod_message'] = 'Product Edited.'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['edit_prod_message'] = 'Product name already exists'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         else:
             session['edit_prod_message'] = 'Please enter all fields'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -743,11 +729,10 @@ def edit_product(user_type, prod_no):
 @app.route('/account/<user_type>/add<prod_no>')
 def show_add_detail(user_type, prod_no):
     if 'current_ven' in session:
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     elif 'admin' in session:
-        return redirect(url_for('show_accounts_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
-
         return redirect(url_for('show_home'))
 
 
@@ -766,13 +751,13 @@ def add_product_detail(user_type, prod_no):
                     f'insert into product_details (prod_no,color,size,price,qty) values ({prod_no}, \'{prod_color.upper()}\', \'{prod_size.upper()}\', {float(prod_price):.2f}, {prod_qty})'))
                 conn.commit()
                 session['add_var_message'] = 'Variation Added'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['add_var_message'] = 'Product Variation Already Exists'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         else:
             session['add_var_message'] = 'Product Price and Product Quantity Cannot be Empty'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -780,7 +765,7 @@ def add_product_detail(user_type, prod_no):
 @app.route('/account/<user_type>/configs<config_id>')
 def show_edit_variations(user_type, config_id):
     if 'current_ven' in session:
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -802,19 +787,19 @@ def edit_variations(user_type, config_id, prod_no):
                     conn.execute(text(
                         f'update product_details set color = \'{prod_color.upper()}\', size = \'{prod_size.upper()}\', price = \'{float(prod_price):.2f}\', qty = {int(prod_qty)} where config_id = {int(config_id)}'))
                     conn.commit()
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
                 else:
                     session['edit_prod_variation'] = "Product Already Exists"
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['edit_prod_variation'] = "Product Edited"
                 conn.execute(text(
                     f'update product_details set color = \'{prod_color.upper()}\', size = \'{prod_size.upper()}\', price = \'{float(prod_price):.2f}\', qty = {int(prod_qty)} where config_id = {int(config_id)}'))
                 conn.commit()
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         else:
             session['edit_prod_variation'] = "Product Price and Quantity Cannot be Empty"
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -822,7 +807,7 @@ def edit_variations(user_type, config_id, prod_no):
 @app.route('/account/<user_type>add_image<prod_no>')
 def show_add_images(user_type, prod_no):
     if 'current_ven' in session or 'admin' in session:
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -843,12 +828,12 @@ def add_prod_images(user_type, prod_no):
                     conn.commit()
                 else:
                     session['add_pic_message'] = 'Image url already exists for this product'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
             else:
                 session['add_pic_message'] = 'Url is empty'
-                return redirect(url_for('show_account_page', user_type=user_type))
+                return redirect(url_for('show_products', user_type=user_type))
         session['add_pic_message'] = 'Picture Added'
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -861,9 +846,9 @@ def add_variation_picture(user_type, config_id):
             conn.execute(text(f'update product_details set config_display = \'{pic}\' where config_id = {config_id}'))
             conn.commit()
             session['add_variation_pic'] = 'Picture Added'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
         else:
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
@@ -882,10 +867,10 @@ def add_discount(user_type, prod_no):
                         f'insert into discounts (prod_no,disc_type,disc_amt,added_by) values ({prod_no},\'{disc_type}\',{int(disc_amt) / 100}, \'{user_type}\')'))
                     conn.commit()
                     session['disc_message'] = 'Discount Added'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
                 else:
                     session['disc_message'] = 'Discount already exists for that product'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
             else:
                 dupe_disc = conn.execute(
                     text(f'select * from discounts where prod_no = {prod_no}')).all()
@@ -895,19 +880,19 @@ def add_discount(user_type, prod_no):
                             f'insert into discounts (prod_no,disc_type,disc_amt,disc_exp,added_by) values ({prod_no},\'{disc_type}\',{int(disc_amt) / 100},date(date_add(now(), interval {disc_dur} day)),\'{user_type}\' )'))
                         conn.commit()
                         session['disc_message'] = 'Discount Added'
-                        return redirect(url_for('show_account_page', user_type=user_type))
+                        return redirect(url_for('show_products', user_type=user_type))
                     else:
                         session['disc_message'] = 'Please Enter All Fields'
-                        return redirect(url_for('show_account_page', user_type=user_type))
+                        return redirect(url_for('show_products', user_type=user_type))
                 else:
                     session['disc_message'] = 'Discount already exists for that product'
-                    return redirect(url_for('show_account_page', user_type=user_type))
+                    return redirect(url_for('show_products', user_type=user_type))
         else:
             session['disc_message'] = 'Please Enter All Fields'
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
     else:
         if 'current_ven' in session or 'admin' in session:
-            return redirect(url_for('show_account_page', user_type=user_type))
+            return redirect(url_for('show_products', user_type=user_type))
         else:
             return redirect(url_for('show_home'))
 
@@ -918,7 +903,7 @@ def delete_discount(user_type, prod_no):
         conn.execute(text(f'delete from discounts where prod_no = {prod_no}'))
         conn.commit()
         session['disc_message'] = 'Discount Deleted'
-        return redirect(url_for('show_account_page', user_type=user_type))
+        return redirect(url_for('show_products', user_type=user_type))
     else:
         return redirect(url_for('show_home'))
 
