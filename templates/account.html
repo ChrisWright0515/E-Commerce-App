@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{%block title%}Wright Store | {{user_info[1] | title}}{%endblock%}</title>
     <link rel="stylesheet" href="../static/styles/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap&family=Smokum&display=swap"  rel="stylesheet">
@@ -22,9 +24,32 @@
                 <span class="hamburger"><ion-icon name="menu-outline"></ion-icon></span>
                 <div class="dropdown-content">
                     <a href="/">Home</a>
+                    <div class="underline"></div>
                     <a href="/products">Products</a>
+                    <div class="underline"></div>
                     {%block navlink%}
-                        <a href="{{url_for('show_account_page',user_type=user_info[7])}}">Account</a>
+                    {%if admin%}
+                        <a href="{{url_for('show_account_page',user_type=user_info[7])}}">Admin Account</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_products',user_type=user_info[7])}}">Vendor Products</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_chat')}}">Chat</a>
+                        <div class="underline"></div>
+                    {%endif%}
+                    {%if current_ven%}
+                        <a href="{{url_for('show_account_page',user_type=user_info[7])}}">Vendor Account</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_products',user_type=user_info[7])}}">My Products</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
+                        <div class="underline"></div>
+                        <a href="{{url_for('show_chat')}}">Chat</a>
+                        <div class="underline"></div>
+                    {%endif%}
                     {%endblock%}
                     <a href="{{url_for('logout')}}">Log Out</a>
                 </div>
@@ -35,143 +60,150 @@
             <span>Wright</span><ion-icon name="game-controller-outline"></ion-icon><span>Games</span>
         </a>
 
-        <form style="position:relative;width:30%" action="" method="post">
+        <form style="position:relative;width:30%" action="{{url_for('search_products')}}" method="post">
             <input type="text"class="head_input" name="search"placeholder=" Search Products" id="search">
             <button type="submit" value="" id="search_btn"><ion-icon name="search-outline"></ion-icon></button>
         </form>
     </header>
+
     <p id="user_type"style="display:none;">{{user_info[7]}}</p>
-    <div class="title">
-          <h2 class="header">Account</h2>
-    </div>
-        <div class="center">
-
+    {%block prof_info%}
+        <div class="title">
+            <h2 class="header">Account</h2>
+        </div>
+        <section class="center">
             <div class="profile_card">
-
-                <div class="profile_container">
-                    {%block prof_pic%}
-<!--                        <img src="https://picsum.photos/200/300" alt="{{user_info[1]| title}}">-->
-                    {%endblock%}
-                </div>
-                {%block prof_info%}
-                    <div class="name_container">
-                        <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                {% if add_logo_message %}
+                    <p>{{add_logo_message}}</p>
+                {%endif%}
+                {%if current_ven%}
+                    <div class="profile_container">
+                        {%block prof_pic%}
+                            <img src="{{user_info[-1]}}" alt="{{user_info[1]| title}}">
+                            <p class="show_logo"><ion-icon name="images-outline"></ion-icon></p>
+                            <form style="display: none;" action="{{url_for('add_logo',user_type=user_info[7])}}" method="post">
+                                <input class="input" type="text" name="logo"placeholder="Add Company Logo" id="">
+                                <input style="font-size: initial;" type="submit" value="Add Logo">
+                            </form>
+                        {%endblock%}
+                    </div>
+                {%endif%}
+                <div class="name_container">
+                    <h2 class="vendor_name card_title">{{user_info[1] | title}}</h2>
+                    <div class="underline"></div>
+                    <div class="contact">
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Phone Number:</p>
+                            <p class="contact_label contact_info">{{phone}}</p>
+                        </div>
                         <div class="underline"></div>
-                        <div class="contact">
-                            <div class="contact_label_cont flex_cont">
-                                <p class="contact_label">Phone Number:</p>
-                                <p>{{phone}}</p>
-                            </div>
-                            <div class="underline"></div>
-                            <div class="contact_label_cont flex_cont">
-
-                                <p class="contact_label">Email:</p>
-                                <p>{{user_info[4]}}</p>
-                            </div>
-                            <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Email:</p>
+                            <p class="contact_label contact_info">{{user_info[4] | title}}</p>
                         </div>
-
-                        <div class="details_container">
-                            {%if product_count | length > 0%}
-                                <div class="consoles_container count_container">
-                                  <h4>{{product_count[0][0]}}</h4>
-                                  <p>{{product_count[0][1]}}</p>
-                                </div>
-                            {%endif%}
-
-                            {%if product_count | length > 2%}
-                                <div class="games_container count_container">
-                                  <h4>{{product_count[2][0]}}</h4>
-                                  <p>{{product_count[2][1]}}</p>
-                                </div>
-                            {%endif%}
-
-                            {%if product_count | length > 1%}
-                                <div class="acc_container count_container">
-                                  <h4>{{product_count[1][0]}}</h4>
-                                  <p>{{product_count[1][1]}}</p>
-                                </div>
-                            {%endif%}
+                        <div class="underline"></div>
+                        <div class="contact_label_cont flex_cont">
+                            <p class="contact_label contact_info">Username:</p>
+                            <p class="contact_label contact_info">{{user_info[5] | title}}</p>
                         </div>
-                        {%if admin%}
-                            <div class="details_container">
+                        <div class="underline"></div>
+                    </div>
 
-                                <div class="consoles_container count_container">
-                                  <h4>{{user_count[1][0]}}</h4>
-                                  <p>Customers</p>
-                                </div>
-
-                                <div class="games_container count_container">
-                                  <h4>{{user_count[2][0]}}</h4>
-                                  <p>Vendors</p>
-                                </div>
-
-                                <div class="acc_container count_container">
-                                  <h4>{{product_count[0][0]}}</h4>
-                                  <p>Admin</p>
-                                </div>
+                    <div class="details_container">
+                        {%if product_count | length > 0%}
+                            <div class="consoles_container count_container">
+                                <h4>{{product_count[0][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[0][1]}}</p>
                             </div>
                         {%endif%}
-                            <div class="details_container">
-                                {%block admin_link%}
-                                    {%if admin%}
-                                        <a class="admin_link" href="{{url_for('show_accounts',user_type=user_info[7])}}">Accounts</a>
-                                    {%endif%}
-                                        <a class="admin_link" href="{{url_for('show_admin_orders',user_type=user_info[7])}}">Orders</a>
-                                {%endblock%}
+
+                        {%if product_count | length > 2%}
+                            <div class="games_container count_container">
+                                <h4>{{product_count[2][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[2][1]}}</p>
                             </div>
+                        {%endif%}
+
+                        {%if product_count | length > 1%}
+                            <div class="acc_container count_container">
+                                <h4>{{product_count[1][0]}}</h4>
+                                <p class="contact_label contact_info">{{product_count[1][1]}}</p>
+                            </div>
+                        {%endif%}
                     </div>
-                {%endblock%}
+                    {%if admin%}
+                        <div class="details_container">
+
+                            <div class="consoles_container count_container">
+                                <h4>{{user_count[1][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[1][1]}}</p>
+                            </div>
+
+                            <div class="games_container count_container">
+                                <h4>{{user_count[2][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[2][1]}}</p>
+                            </div>
+
+                            <div class="acc_container count_container">
+                                <h4>{{user_count[0][0]}}</h4>
+                                <p class="contact_label contact_info">{{user_count[0][1]}}</p>
+                            </div>
+                        </div>
+                    {%endif%}
+                </div>
             </div>
-        </div>
+        </section>
+    {%endblock%}
     {%block body%}
-        <div class="title">
+        <!-- <div class="title">
           <h2 class="header">Products</h2>
         </div>
         {%if edit_message%}
             {%if edit_message == 'Product Edited.'%}
-                <p style="color:green; font-size:42px;">{{edit_message}}</p>
+                <p class="good_message" >{{edit_message}}</p>
             {%else%}
-                <p style="color:red;font-size:42px;">{{edit_message}}</p>
+                <p class="error_message">{{edit_message}}</p>
             {%endif%}
         {%endif%}
 
         {%if add_var_message%}
             {%if add_var_message == 'Variation Added'%}
-                <p style="color:green; font-size:42px;">{{add_var_message}}</p>
+                <p class="good_message">{{add_var_message}}</p>
             {%else%}
-                <p style="color:red;font-size:42px;">{{add_var_message}}</p>
+                <p class="error_message">{{add_var_message}}</p>
             {%endif%}
         {%endif%}
 
         {%if edit_prod_variation%}
             {%if edit_prod_variation == 'Product Edited'%}
-                <p style="color:green; font-size:42px;">{{edit_prod_variation}}</p>
+                <p class="good_message">{{edit_prod_variation}}</p>
             {%else%}
-                <p style="color:red;font-size:42px;">{{edit_prod_variation}}</p>
+                <p class="error_message">{{edit_prod_variation}}</p>
             {%endif%}
         {%endif%}
 
         {%if add_pic_message%}
             {%if add_pic_message == 'Picture Added'%}
-                <p style="color:green; font-size:42px;">{{add_pic_message}}</p>
+                <p class="good_message">{{add_pic_message}}</p>
             {%else%}
-                <p style="color:red;font-size:42px;">{{add_pic_message}}</p>
+                <p class="error_message">{{add_pic_message}}</p>
             {%endif%}
         {%endif%}
 
         {%if add_variation_pic%}
-            <p style="color:green; font-size:42px;">{{add_variation_pic}}</p>
+            <p class="good_message">{{add_variation_pic}}</p>
         {%endif%}
 
         {%if disc_message%}
-            {%if disc_message == 'Discount Added'%}
-                <p style="color:green; font-size:42px;">{{disc_message}}</p>
+            {%if disc_message == 'Discount Added' or disc_message == 'Discount Deleted'%}
+                <p class="good_message">{{disc_message}}</p>
             {%else%}
-                <p style="color:red;font-size:42px;">{{disc_message}}</p>
+                <p class="error_message">{{disc_message}}</p>
             {%endif%}
         {%endif%}
-
+        {%if delete_prod_message%}
+            <p class="good_message">{{delete_prod_message}}</p>
+        {%endif%}
         <section class="product_container add_product_container">
             <div class="product_card add_product">
                 {%if create_message%}
@@ -229,6 +261,13 @@
             {%for product in all_products%}
                 <div class="product_card">
                     <div class="product_main">
+                        <div class="product_delete">
+                            <span>Delete Product</span>
+                            <ion-icon class="delete_product" name="trash-outline"></ion-icon>
+                            <form style="display: none;"method="post" action="{{url_for('delete_product',user_type=user_info[7],prod_no=product[0])}}">
+                                <input type="submit" value="Delete Product">
+                            </form>
+                        </div>
                         <form action="{{url_for('add_prod_images',user_type=user_info[7],prod_no=product[0])}}"method="post" class="product_setting add_images">
                             <ion-icon name="images-outline"></ion-icon>
                             <span>Add Images</span>
@@ -243,7 +282,6 @@
                         </form>
                         <p class="product_setting product_edit"><ion-icon name="settings-outline"></ion-icon><span class="product_setting product_add">Edit Product</span></p>
                         <p class="product_setting product_add"></p>
-<!--                        {%if inventory | length > 1%}-->
                             {%if product[0] not in inventory[0]%}
                                 <p class="inventory">In stock: 0</p>
                             {%else%}
@@ -253,7 +291,6 @@
                                     {%endif%}
                                 {%endfor%}
                             {%endif%}
-<!--                        {%endif%}-->
                         <div id="{{product[4]}}" class="img" style="background-image: url({{product[4]}});"></div>
 
                         <div class="underline"></div>
@@ -298,11 +335,11 @@
 
                         <div class="underline"></div>
 
-                        <p class="view_details_btn"style="width:fit-content;margin:0 auto;position:relative;"><ion-icon class="arrow_btn" style="font-size: 24px;cursor:pointer;"  name="chevron-down-outline"></ion-icon><span style="position:absolute;">View Details</span></p>
+                        <p class="view_details_btn"style="width:fit-content;margin:0 auto;position:relative;"><ion-icon class="arrow_btn"  name="chevron-down-outline"></ion-icon><span style="position:absolute;">View Details</span></p>
                     </div>
                     <div style="display:none;" class="vendor_product_details animate__animated">
                         <form style="margin:1rem auto;" action="{{url_for('add_discount',user_type=user_info[7],prod_no=product[0])}}" method="post">
-                            <p class="disc_icon show_disc" style="position:relative;"><ion-icon style="font-size:24px;" class="" name="pricetags-outline"></ion-icon><span>Add Discount</span></p>
+                            <p class="disc_icon show_disc" style="position:relative;"><ion-icon class="disc_ion" name="pricetags-outline"></ion-icon><span>Add Discount</span></p>
                             <div class="discount_cont"style="display:none;flex-direction:column;align-items:center;">
                                 <input type="submit" value="Add">
                                 <select  class="disc_type"name="disc_type">
@@ -313,8 +350,19 @@
                                 <input type="number" name="disc_amt"maxlength="99"minlength="1"placeholder="Discount Amount" id="">
                                 <input style="display:none;" type="number"placeholder="Discount Duration(Days)" name="disc_dur" id="">
                             </div>
-
                         </form>
+                        
+                        {% if product[6] != None%}
+                            <div class="flex_cont">
+                                <p>Discount: {{ (product[6] * 100) | round | int}}% Off</p>
+                                {%if product[7] != None%}
+                                    <p>Ends in {{product[7]}} days</p>
+                                {%endif%}
+                                <a href="{{url_for('delete_discount',user_type=user_info[7],prod_no=product[0])}}"class="btn">Delete Discount</a>
+                            </div>
+                            <div style="margin: 0.5rem auto;" class="underline"></div>
+                        {%endif%}
+                        
                         <div class="configurations">
                             <p>Color</p>
                             <p>Size</p>
@@ -327,7 +375,7 @@
                                 <form method="post" action="{{url_for('edit_variations',user_type=user_info[7],config_id=detail[0],prod_no=detail[1])}}" class="config_details">
                                     <p>{{detail[2] | title}}</p>
                                     <p>{{detail[3]}}</p>
-                                    <p>{{detail[4]}}</p>
+                                    <p>${{ '{:,.2f}'.format(detail[4]) }}</p>
                                     <p>{{detail[5]}}</p>
                                     <p class="edit_prod_details"><ion-icon name="settings-outline"></ion-icon></p>
 
@@ -335,23 +383,27 @@
                                 <form method="post" action="{{url_for('add_variation_picture',user_type=user_info[7],config_id=detail[0])}}" >
                                     {%if detail[-1] == None or detail[-1] == ''%}
                                         <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
+                                        
                                     {%else%}
-                                    <div class="flex_cont" style="justify-content:space-between;">
-                                        <p style="font-size:10px;">{{detail[-1]}}</p>
+                                    <div class="flex_cont var_img_cont">
+                                        <p class="variation_img"style="background-image:url({{detail[-1]}})" ></p>
                                         <ion-icon class="add_variation_pic" name="images-outline"></ion-icon>
                                     </div>
                                     {%endif%}
-
+                                    
                                 </form>
+                                <div style="position: relative;">
+                                    <a href="{{url_for('delete_product_variation',user_type=user_info[7],config_id=detail[0])}}" class="delete_var"><ion-icon class="delete_product" name="trash-outline"></ion-icon><span>Delete Variation</span></a>
+                                </div>
                                 <div class="underline"></div>
                             {%endif%}
                         {%endfor%}
                         <form action="{{url_for('add_product_detail',user_type=user_info[7],prod_no=product[0])}}"class="last_row_details" style="display:flex;justify-content:space-between;margin-bottom:3rem;" method="post"></form>
-                        <p class="add_variation"><ion-icon style="font-size: 32px;cursor:pointer;" name="add-circle-outline"></ion-icon><span>Add Product Variartion</span></p>
+                        <p class="add_variation"><ion-icon name="add-circle-outline"></ion-icon><span>Add Product Variartion</span></p>
                     </div>
                 </div>
             {%endfor%}
-        </section>
+        </section> -->
     {%endblock%}
 
 

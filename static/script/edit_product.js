@@ -1,6 +1,4 @@
-//$('.product_edit').on('click', () => {
-//    console.log(this.parentNode)
-//});
+
 let edit_buttons = document.querySelectorAll(".product_edit")
 let view_details = document.querySelectorAll(".view_details_btn")
 let add_details = document.querySelectorAll(".add_variation")
@@ -10,13 +8,16 @@ let add_images_select = document.querySelectorAll(".add_images_select")
 let add_variation_pic = document.querySelectorAll(".add_variation_pic")
 let discount = document.querySelectorAll(".show_disc")
 let disc_type = document.querySelectorAll(".disc_type")
+let add_logo = document.querySelectorAll(".show_logo")
+let delete_product_btn = document.querySelectorAll(".delete_product")
 function edit_product(){
     user_type = document.getElementById('user_type')
     this.style.display = 'none'
     let card = this.parentNode;
     child = card.children
     values = []
-    form = child[9].nextElementSibling
+    form_el = card.querySelectorAll('.edit_products_form')
+    form = form_el[0]
     inputs = card.querySelectorAll('.product_input')
     picture = card.querySelectorAll('.img')
     source = picture[0].id
@@ -29,6 +30,8 @@ function edit_product(){
             <p>Image URL:</p>
             <input class = "product_form_input" type="text" name="prod_img_url" value="${source}" id="">
         </div>
+        
+        <div class="underline"></div>
 
         <div class="next_to">
             <p>Product Name:</p>
@@ -92,25 +95,23 @@ function edit_variations(){
     color_el = size_el.previousElementSibling
     qty = qty_el.textContent
     price = price_el.textContent
+    console.log(price)
     size = size_el.textContent
     color = color_el.textContent
-    console.log(color,size,price,qty)
     form.innerHTML = `
         <input class="edit_prod_details_input" type="text" name="prod_color"placeholder="Color"value="${color}" id="">
         <input class="edit_prod_details_input" type="text" name="prod_size"placeholder="Size" id=""value="${size}">
-        <input class="edit_prod_details_input" type="number" name="prod_price"placeholder="Price"step="0.01" id=""value="${price}">
+        <input class="edit_prod_details_input" type="number" name="prod_price"placeholder="Price"step="0.01" id=""value="${price.slice(1)}">
         <input class="edit_prod_details_input" type="number" name="prod_qty"placeholder="Quantity" id=""value="${qty}">
         <button style="width:20%"class="edit_prod_details_input_submit" type="submit"><ion-icon style="font-size: 20px;" name="add-circle-outline"></ion-icon></button>
     `
 }
 function show_images_form(){
     form = this.parentNode
-    console.log(form)
     num_pics = $(this).val()
     for(i=0; i < num_pics; i++){
         form.innerHTML += `<input type="text" name="img_url" id="">`
     }
-    console.log(num_pics)
 }
 function add_prod_images(){
     select = this.querySelectorAll('.add_images_select')
@@ -122,7 +123,6 @@ function add_prod_images(){
 //});
 }
 function variation_pic(){
-    console.log(this)
     form = this.parentNode
     form.innerHTML = `
         <input type="text" name="var_img_url" id="">
@@ -132,7 +132,6 @@ function variation_pic(){
 
 function show_discount(){
     const disc_cont = this.nextElementSibling
-    console.log(disc_cont)
     if (disc_cont.style.display == 'none'){
         $(disc_cont).slideDown(500)
         disc_cont.style.display = 'flex'
@@ -143,7 +142,6 @@ function show_discount(){
 }
 function show_disc_dur(){
     parent = this.parentNode
-    console.log(this.value)
     if (this.value == 'TIMED'){
         dur_input = parent.lastElementChild
         dur_input.style.display = 'block'
@@ -153,6 +151,28 @@ function show_disc_dur(){
         dur_input.style.display = 'none'
     }
 }
+function show_logo(){
+    const logo_cont = this.nextElementSibling
+    if (logo_cont.style.display == 'none'){
+        $(logo_cont).slideDown(500)
+        logo_cont.style.display = 'flex'
+        logo_cont.style.margin = 'auto'
+    }else{
+        $(logo_cont).slideUp(500)
+    }
+
+};
+function show_delete_btn(){
+    span = this.previousElementSibling
+    form = this.nextElementSibling
+    if (form.style.display == 'none'){
+        $(form).slideToggle(500)
+        $(span).hide()
+    }else{
+        $(form).slideUp(500)
+        $(span).show()
+    }
+};
 $('#add_product').on('click', () => {
     $('#add_product').hide()
     $('.create_prod_message').hide()
@@ -161,7 +181,9 @@ $('#add_product').on('click', () => {
 
 });
 
-
+delete_product_btn.forEach(button => {
+    button.addEventListener('click', show_delete_btn)
+});
 edit_buttons.forEach(button => {
     button.addEventListener('click', edit_product)
 });
@@ -188,4 +210,7 @@ discount.forEach(button => {
 });
 disc_type.forEach(button => {
     button.addEventListener('change', show_disc_dur)
+});
+add_logo.forEach(button => {
+    button.addEventListener('click', show_logo)
 });

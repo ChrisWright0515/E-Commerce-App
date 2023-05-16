@@ -5,8 +5,6 @@ function stickFooter(){
     let windowsHeight = window.innerHeight
     var stickpoint = bottom.getBoundingClientRect().top
     if (stickpoint < windowsHeight - 50) {
-//        nav.style.opacity = "0"
-//        $(".logo").css('font-size', '70%')
         $("#nav-bar").css('font-size', '70%')
         $("#nav-bar").css('box-shadow', '0px')
         foot.classList.add("stick")
@@ -14,8 +12,7 @@ function stickFooter(){
 
 
     } else {
-//        nav.style.opacity = "1"
-//        $(".logo").css('font-size', '100%')
+
         $("#nav-bar").css('font-size', '100%')
         $("#nav-bar").css('box-shadow', '0px 0px 5px black')
         foot.classList.remove("stick");

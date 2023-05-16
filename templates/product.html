@@ -3,75 +3,171 @@
 {%block body%}
     <div class="prod_info">
         <div class="product_pics">
-            {%if product[-1] != None%}
-                <img style="padding: 2rem;height: 350px;width: 350px;" src="{{product[-1]}}" alt="" srcset="" class="big_pic" id="big_pic">
-            {%else%}
-                <img style="padding: 2rem;height: 350px;width: 350px;" src="{{product[-2]}}" alt="" srcset="" class="big_pic" id="big_pic">
-            {%endif%}
-            <div class="small_pic_cont">
-                {%if imgs | length < 4 %}
-                    {% for img in imgs %}
-                        <img src="{{img}}" class="small_pic" alt="" srcset="">
-                    {% endfor %}
-                {% else %}
-                    {% for i in range(3) %}
-                        <img src="{{imgs[i]}}" alt=""class="small_pic" srcset="">
-                    {% endfor %}
-                {% endif %}
+            <div class="big_pic_cont">
+                {%if product[-1] != None%}
+                    <img  src="{{product[-1]}}" alt="" srcset="" class="big_pic" id="big_pic">
+                {%else%}
+                    <img  src="{{product[-2]}}" alt="" srcset="" class="big_pic" id="big_pic">
+                {%endif%}
+            </div>
+            <div class="product_options">
+                {%if add_cart_message%}
+                    {%if add_cart_message == 'Added to Cart'%}
+                        <p style="color:green;">{{add_cart_message}}</p>
+                    {%else%}
+                        <p style="color:red;">{{add_cart_message}}</p>
+                    {%endif%}
+                {%endif%}
+                <div class="title"><h2 class="prod_display_name">{{product[2] | title}}</h2></div>
+                <div class="underline"></div>
+                <p>{{product[3] | title}}</p>
+                <div class="underline"></div>
+                {%if product[4] != '' or product[5] != ''%}
+                    <p>{{product[4] | title}} {{product[5] | upper}}</p>
+                    <div class="underline"></div>
+                {%endif%}
+    
+    
+    
+                {%if product[8] | int < 1%}
+                    <p style="text-decoration:line-through;color:red" class="amt_avail">Amount Available: 0</p>
+                {%else%}
+                    {%if current_user%}
+                        <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
+                        <form style="text-align:center;" action="{{url_for('add_to_cart',config_id=product[0])}}" method="post">
+                            {%if product[6] == product[7]%}
+                                <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
+                            {%else%}
+                                {% if product[-3] != None%}
+                                    {%if product[-3] | int < 7 %}
+                                        <p style="color: red;">{{product[-3]}} days left</p>
+                                    {%else%}
+                                        <p style="color:green;">{{product[-3]}} days left</p>
+                                    {%endif%}
+                                {%endif%}
+                                <p style="color:red; text-decoration:line-through;">Price: {{product[6]}}</p>
+                                <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
+                            {%endif%}
+                        </form>
+                    {%else%}
+                        
+                        {%if product[6] == product[7]%}
+                            <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
+                            <p style="color:green;">${{product[7]}}</p>
+                            <p class="show_sign_in btn">Sign in to add to cart</p>
+
+                        {%else%}
+                            <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
+                            <p style="color:red; text-decoration:line-through;">Price: {{product[6]}}</p>
+                            {% if product[-3] != None%}
+                                {%if product[-3] | int < 7 %}
+                                    <p style="color: red;">{{product[-3]}} days left</p>
+                                {%else%}
+                                    <p style="color:green;">{{product[-3]}} days left</p>
+                                {%endif%}
+                            {%endif%}
+                            <p style="color:green;">${{product[7]}}</p>
+                            <p class="show_sign_in btn">Sign in to Add to Cart</p>
+                        {%endif%}
+                        
+                    {%endif%}
+                {%endif%}
             </div>
         </div>
-        <div class="product_options">
-            {%if add_cart_message%}
-                {%if add_cart_message == 'Added to Cart'%}
-                    <p style="color:green;">{{add_cart_message}}</p>
-                {%else%}
-                    <p style="color:red;">{{add_cart_message}}</p>
-                {%endif%}
-            {%endif%}
-            <div class="title"><h2 class="prod_display_name">{{product[2] | title}}</h2></div>
-            <div class="underline"></div>
-            <p>{{product[3] | title}}</p>
-            <div class="underline"></div>
-            {%if product[4] != '' or product[5] != ''%}
-                <p>{{product[4] | title}} {{product[5] | upper}}</p>
-                <div class="underline"></div>
-            {%endif%}
-
-
-
-            {%if product[8] < 1%}
-                <p style="text-decoration:line-through;color:red" class="amt_avail">Amount Available: 0</p>
-            {%else%}
-                {%if current_user%}
-                    <p style="color:green" class="amt_avail">Amount Available: {{product[8]}}</p>
-                    <form style="text-align:center;" action="{{url_for('add_to_cart',config_id=product[0])}}" method="post">
-<!--                        <select name="quantity" style="margin:.5rem auto;">-->
-<!--                            <option hidden="hidden">Select Quantity</option>-->
-<!--                            {%for i in range(1,product[8] + 1)%}-->
-<!--                                <option value="{{i}}">{{i}}</option>-->
-<!--                            {%endfor%}-->
-<!--                        </select>-->
-                        {%if product[6] == product[7]%}
-                            <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
-                        {%else%}
-                            <p style="color:red; text-decoration:line-through;">Price: {{product[6]}}</p>
-                            <input style="margin:.5rem auto;" type="submit" value="Add To Cart ${{product[7]}}">
-                        {%endif%}
-                    </form>
-
-<!--                    <a class="add_to_cart" href="">Add to cart ${{product[6]}}</a>-->
-                {%endif%}
-            {%endif%}
+        <div class="small_pic_cont">
+            {%if imgs | length < 4 %}
+                {% for img in imgs %}
+                    <div class="small_pic_div">
+                        <img src="{{img}}" class="small_pic" alt="" srcset="">
+                    </div>
+                {% endfor %}
+            {% else %}
+                {% for i in range(4) %}
+                    <div class="small_pic_div">
+                        <img src="{{imgs[i]}}" alt=""class="small_pic" srcset="">
+                    </div>
+                {% endfor %}
+            {% endif %}
         </div>
     </div>
+    <section class="reviews">
+        <div class="review_title">
+            <h2 class="header">Reviews</h2>
+        </div>
+        <div class="page_underline"></div>
+        <div class="add_review product_card">
+            <h2 class="header">Leave a Review</h2>
+            <form class="rating_form" action="{{url_for('review',config_id=product[0])}}" method="post">
+                <div class="rating_container review_info">
+                    <input type="radio" class="star_rating" name="rating" value="1"><ion-icon class="star" name="star-outline"></ion-icon>
+                    <input type="radio" class="star_rating" name="rating" value="2"><ion-icon class="star" name="star-outline"></ion-icon>
+                    <input type="radio" class="star_rating" name="rating" value="3"><ion-icon class="star" name="star-outline"></ion-icon>
+                    <input type="radio" class="star_rating" name="rating" value="4"><ion-icon class="star" name="star-outline"></ion-icon>
+                    <input type="radio" class="star_rating" name="rating" value="5"><ion-icon class="star" name="star-outline"></ion-icon>
+                </div>
+                {%if current_user%}
+                    <input class="input review_info" type="email" name="review_email"placeholder="Enter Email"value="{{user_email}}" id="">
+                {%else%}
+                <input class="input review_info" type="email" name="review_email"placeholder="Enter Email" id="">
+                {%endif%}
+                <input class="input review_info" type="text" name="review_header"placeholder="Enter Review Header" id="">
+                <textarea class="review_info review_text" name="review" id="" cols="30" rows="5" placeholder="Add Review"></textarea>
+                <input class="review_info" type="submit" value="Add Review">
+            </form>
+        </div>
+        <div class="page_underline"></div>
+        <div class="review_filter product_card">
+            <label class="card_title" for="filter_stars">Filter by Star Rating: </label>
+            <form action="{{url_for('filter_reviews',config_id=product[0])}}" method="get">
+                <div class="filter_star_cont">    
+                    <input type="radio" name="filter_stars" value="1" id=""><ion-icon class="review_star filter_star" name="star-outline"></ion-icon>
+                    <input type="radio" name="filter_stars" value="2" id=""><ion-icon class="review_star filter_star" name="star-outline"></ion-icon>
+                    <input type="radio" name="filter_stars" value="3" id=""><ion-icon class="review_star filter_star" name="star-outline"></ion-icon>
+                    <input type="radio" name="filter_stars" value="4" id=""><ion-icon class="review_star filter_star" name="star-outline"></ion-icon>
+                    <input type="radio" name="filter_stars" value="5" id=""><ion-icon class="review_star filter_star" name="star-outline"></ion-icon>
+                </div>
+                <input type="submit" value="Filter">
+            </form>
+        </div>
+        {%if reviews | length > 0%}
+            {%for review in reviews%}
+                <div class="review product_card">
+                    <div class="review_star_cont">
+                        {%if review[3] == 0%}
+                                <h2 class="review_title">0 STARS</h2>
+                        {%else%}
+                            {%for i in range(review[3])%}
+                                <ion-icon class="review_star" name="star"></ion-icon>
+                            {%endfor%}
+                        {%endif%}
+                    </div>
+                    <div class="review_header">
+                        <h2 class="review_title">{{review[1] | title}}</h2>
+                        <h2 class="review_title">{{review[5]}}</h2>  
+                    </div>
+                    
+                    <div class="underline"></div>
+                    {%if review[6] != '' or review[6] != None%}
+                        <h2 class="review_name card_title">{{review[6]| title}}</h2>
+                    {%endif%}
+                    <h2 class="review_message">{{review[4] | title}}</h2>
+                    <div class="underline"></div>
+                    {%if admin%}
+                        <a href="{{url_for('delete_review',review_no=review[0],config_id=product[0])}}"class="btn">Delete</a>
+                    {%endif%}
+                    {%if user_email%}
+                        {%if user_email | lower == review[1]| lower%}
+                            <a href="{{url_for('delete_review',review_no=review[0],config_id=product[0])}}"class="btn">Delete</a>
+                        {%endif%}
+                    {%endif%}
+                </div>
+            {%endfor%}
+        {%else%}
+            <div class="review product_card">
+                <p class="header">No Reviews</p>
+            </div>
+        {%endif%}
+    </section>
 {%endblock%}
-{%block script%}
-    <script type="text/javascript">
-<!--        $('.').slick({-->
-<!--          infinite: true,-->
-<!--          slidesToShow: 1,-->
-<!--          slidesToScroll: 1-->
-<!--        });-->
-    </script>
-{%endblock%}
+
 

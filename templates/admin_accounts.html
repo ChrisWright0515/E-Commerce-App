@@ -1,9 +1,47 @@
 {%extends 'account.html'%}
 {%block title%}Wright Store | All Accounts{%endblock%}
-{%block admin_link%}
-<a href="{{url_for('show_account_page',user_type=user_info[7])}}" class="admin_link">Products</a>
-{%endblock%}
+{%block prof_info%}{%endblock%}
 {%block body%}
+    <div class="title">
+        <h2 class="header">Create admin</h2>
+    </div>
+    {%if create_message%}
+        {%if create_message == 'Account Created'%}
+            <p class="good_message">{{create_message}}</p>
+        {%else%}
+            <p class="error_message">{{create_message}}</p>
+        {%endif%}
+    {%endif%}
+    <form class="form_style" action="{{url_for('create_admin',user_type=user_info[7])}}" method="post">
+        <input class="input" type="text"placeholder="First Name" name="first_name" id="">
+        <input class="input" type="text"placeholder="Last Name" name="last_name" id="">
+        <input class="input" type="number"placeholder="Phone Number" name="phone" id="">
+        <input class="input" type="email"placeholder="Email" name="email" id="">
+        <input class="input" type="text"placeholder="Username" name="username" id="">
+        <input class="sup_password input"type="password"placeholder="Password" name="password" id="admin_sup_password">
+        <div class="pass-needs ven-pass-needs" id="pass-needs">
+            <p> Your pasword must contain...</p>
+            <ul class="group">
+                <li class="pass-req pass-reqX upper-req">
+                    <ion-icon class="close-outline upper-req" name="close-outline"></ion-icon> 1 Uppercase letter
+                </li>
+                <li class="pass-req pass-reqX lower-req">
+                    <ion-icon class="close-outline" name="close-outline"></ion-icon> 1 Lowercase letter
+                </li>
+                <li class="pass-req pass-reqX length-req">
+                    <ion-icon class="close-outline" name="close-outline"></ion-icon> At least 8 Characters
+                </li>
+                <li class="pass-req pass-reqX num-req">
+                    <ion-icon class="close-outline" name="close-outline"></ion-icon> 1 number
+                </li>
+                <li class="pass-req pass-reqX spec-req">
+                    <ion-icon class="close-outline" name="close-outline"></ion-icon> 1 special character
+                </li>
+            </ul>
+        </div>
+        <input class="input" type="password" name="confirm_pass"placeholder="Confirm Password" id="">
+        <input type="submit" value="Create">
+    </form>
     <div class="title">
         <h2 class="header">All Accounts</h2>
     </div>
@@ -86,9 +124,9 @@
                                 <form style="display:flex;flex-direction:column;align-items:center;" action="{{url_for('approve_vendor',user_type=user_info[7],user_no=account[0])}}" method="post">
 
                                 </form>
-                                <a class="admin_link approve_vendor"style="position:absolute;bottom:1rem;width:fit-content">{{account[0]}}Approve Vendor{{vendors[i][0]}}</a>
+                                <a class="admin_link approve_vendor"style="position:absolute;bottom:1rem;width:fit-content">Approve Vendor</a>
                             {%else%}
-                                {%for i in range(vendors[0]| length)%}
+                                {%for i in range(vendors[0] | length)%}
                                     {%if account[0] == vendors[0][i]%}
                                         <div class="contact_label_cont flex_cont">
                                             <p class="contact_label">Vendor ID:</p>
@@ -108,4 +146,5 @@
 {%endblock%}
 {%block script%}
     <script src="../static/script/approve_vendor.js"></script>
+    <script src="../static/script/pass_verification.js"></script>
 {%endblock%}
