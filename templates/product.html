@@ -115,9 +115,7 @@
                 <input class="review_info" type="submit" value="Add Review">
             </form>
         </div>
-        <div class="title">
-            <h2 class="header">Reviews</h2>
-        </div>
+        <div class="page_underline"></div>
         <div class="review_filter product_card">
             <label class="card_title" for="filter_stars">Filter by Star Rating: </label>
             <form action="{{url_for('filter_reviews',config_id=product[0])}}" method="get">
@@ -165,7 +163,9 @@
                 </div>
             {%endfor%}
         {%else%}
-            <p class="header">No Reviews</p>
+            <div class="review product_card">
+                <p class="header">No Reviews</p>
+            </div>
         {%endif%}
     </section>
 {%endblock%}

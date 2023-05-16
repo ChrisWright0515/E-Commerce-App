@@ -32,7 +32,9 @@ a{
 button{
     cursor:pointer;
 }
-
+span{
+    cursor:pointer;
+}
 select{
     cursor:pointer;
     border: none;
@@ -378,7 +380,7 @@ form.dropdown-content div{
     position: absolute;
     margin: 0 10px;
     font-family: 'Press Start 2P', cursive;
-    background: linear-gradient(to right,#000,#FD0000);
+    background: linear-gradient(to right,#fff,#FD0000);;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     transition: .5s;
@@ -427,7 +429,7 @@ form.dropdown-content div{
     border: none;
     border-radius: 50px;
     color:white;
-    padding: 4px;
+    padding: .7rem;
     cursor: pointer;
 }
 .btn:hover{
@@ -811,8 +813,15 @@ input[type=submit]:not(.head_submit):hover{
 .product_edit:hover{
     color: #FD0000;
 }
-.product_edit:hover .product_add{
+.product_edit:hover span{
     display:block;
+}
+.product_edit span{
+    position: absolute;
+    width: max-content;
+    bottom: -15px;
+    left: 0;
+    display: none;
 }
 .product_add{
     display: none;
@@ -968,6 +977,7 @@ input[type=submit]:not(.head_submit):hover{
 .var_img_cont{
     display: flex;
     justify-content: center;
+    margin-bottom: .3rem;
 }
 .variation_img{
     width: 50%;
@@ -1178,7 +1188,7 @@ input[type=submit]:not(.head_submit):hover{
     text-align: center;
 }
 #big_pic{
-    padding: 2rem;
+    padding: 1rem;
     height: 50%;
     width: 60%;
 }
@@ -1644,7 +1654,7 @@ input[type="radio"]{
     flex-direction: column;
     align-items: center;
     width: fit-content;
-    margin: 0 auto;
+    margin: 2rem auto;
 }
 .review_filter label{
     font-size: 200%;

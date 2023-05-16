@@ -95,12 +95,13 @@ function edit_variations(){
     color_el = size_el.previousElementSibling
     qty = qty_el.textContent
     price = price_el.textContent
+    console.log(price)
     size = size_el.textContent
     color = color_el.textContent
     form.innerHTML = `
         <input class="edit_prod_details_input" type="text" name="prod_color"placeholder="Color"value="${color}" id="">
         <input class="edit_prod_details_input" type="text" name="prod_size"placeholder="Size" id=""value="${size}">
-        <input class="edit_prod_details_input" type="number" name="prod_price"placeholder="Price"step="0.01" id=""value="${price}">
+        <input class="edit_prod_details_input" type="number" name="prod_price"placeholder="Price"step="0.01" id=""value="${price.slice(1)}">
         <input class="edit_prod_details_input" type="number" name="prod_qty"placeholder="Quantity" id=""value="${qty}">
         <button style="width:20%"class="edit_prod_details_input_submit" type="submit"><ion-icon style="font-size: 20px;" name="add-circle-outline"></ion-icon></button>
     `

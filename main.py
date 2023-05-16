@@ -7,29 +7,12 @@ from sqlalchemy import *
 import json
 import base64
 from functions import *
+from blueprints import home_page
 
 app = Flask(__name__)
 # CODE
-db_url = 'mysql://root:0515@localhost/game_store'
-engine = create_engine(db_url, echo=True)
-conn = engine.connect()
+from database import conn
 app.secret_key = generate_random_string(10)
-# app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-# db = SQLAlchemy(app)
-
-
-# class Product_Details(db.Model):
-#     __tablename__ = 'product_details'
-#     config_id = Column(INTEGER, primary_key=True)
-#     prod_no = Column(INTEGER, nullable=False)
-#     color = Column(String(255))
-#     size = Column(String(255))
-#     price = Column(Numeric(20, 2), nullable=False)
-#     qty = Column(INTEGER, nullable=False)
-#     config_display = Column(String(255))
-
-
-
 
 
 @app.route('/')
@@ -381,7 +364,7 @@ def show_products(user_type):
         all_products = conn.execute(text(
             f'select pm.prod_no,pm.title,pm.description,pm.category,pm.display_pic,pm.vendor_id,d.disc_amt,timestampdiff(day,now(),d.disc_exp) from product_mast pm left join discounts d on (pm.prod_no=d.prod_no) where pm.vendor_id = \'{user_info[0][8]}\' ;')).all()
         product_details = conn.execute(text(
-            f'select pd.config_id,pd.prod_no,pd.color,pd.size,round(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no) where pm.vendor_id = \'{user_info[0][8]}\'')).all()
+            f'select pd.config_id,pd.prod_no,pd.color,pd.size,truncate(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no) where pm.vendor_id = \'{user_info[0][8]}\'')).all()
         all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
         disc_user = put_in_list(all_discounts,0)
         disc_type = put_in_list(all_discounts,1)
@@ -405,7 +388,7 @@ def show_products(user_type):
         all_products = conn.execute(text(
             f'select pm.prod_no,pm.title,pm.description,pm.category,pm.display_pic,pm.vendor_id,d.disc_amt,timestampdiff(day,now(),d.disc_exp) from product_mast pm left join discounts d on (pm.prod_no=d.prod_no)')).all()
         product_details = conn.execute(text(
-            f'select pd.config_id,pd.prod_no,pd.color,pd.size,round(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no);')).all()
+            f'select pd.config_id,pd.prod_no,pd.color,pd.size,truncate(pd.price - (pd.price * coalesce(d.disc_amt,0)),2),pd.qty,pd.config_display from product_details pd natural join product_mast pm left join discounts d on (pd.prod_no=d.prod_no);')).all()
         all_discounts = conn.execute(text('select prod_no,disc_type,disc_amt,disc_exp from discounts;')).all()
         disc_user = put_in_list(all_discounts, 0)
         disc_type = put_in_list(all_discounts, 1)
